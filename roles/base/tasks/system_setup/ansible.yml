@@ -145,7 +145,7 @@
     - "system_setup/ansible/ansible-pull.service.j2"
     - "system_setup/ansible/ansible-pull.timer.j2"
 
-- name: "ansible | Enable the ansible-pull systemd units"
+- name: "ansible | Enable the ansible-pull systemd timer"
   tags: ansible
   ansible.builtin.service:
     name: "{{ item }}"
@@ -153,5 +153,4 @@
     enabled: true
     daemon_reload : true
   loop:
-    - ansible-pull.service
     - ansible-pull.timer
