@@ -119,7 +119,7 @@
   tags: ansible
   ansible.builtin.copy:
     src: "files/system_setup/ansible/logrotate"
-    dest: /"etc/logrotate.d/ansible"
+    dest: "/etc/logrotate.d/ansible"
     owner: root
     group: root
     mode: "0644"

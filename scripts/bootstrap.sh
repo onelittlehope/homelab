@@ -24,8 +24,6 @@ DEBIAN_FRONTEND=noninteractive apt-get --quiet --assume-yes install \
   aptitude \
   git \
   python3-apt \
-  python3-github \
-  python3-gitlab \
   sudo
 
 echo "Setting up ansible-pull"
