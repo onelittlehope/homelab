@@ -4,3 +4,5 @@ host_roles:
   - "base"
   - name: "base"
     tasks_from: "system_setup/hyperv_vm"
+  - name: "base"
+    tasks_from: "system_setup/debian_testing"

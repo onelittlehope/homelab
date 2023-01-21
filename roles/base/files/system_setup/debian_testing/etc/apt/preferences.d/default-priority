@@ -1,0 +1,47 @@
+##
+## This file is managed by Ansible.
+##
+
+# When multiple Apt repositories are enabled, a package can exist in several
+# of them. To know which one should be installed, Apt assigns priorities to
+# packages. The default is 500.
+#
+# - If the packages have the same priority, the package with a higher version
+#   number (most recent) wins.
+# - If packages have different priorities, the one with the higher priority
+#   wins.
+#
+# Pinning allows changing priorities for only some packages/repositories.
+#
+# To view the priority of a specific package, use:
+#
+#    apt-cache policy my_package_name
+#
+# To view the global priority for each Apt source (repository):
+#
+#    apt-cache policy
+#
+
+# Package pinning priorities
+# --------------------------
+# See http://wiki.debian.org/AptPreferences and http://manpages.debian.net/cgi-bin/man.cgi?query=apt_preferences
+#
+# Pin-Priority   apt-pinning effects to the package
+# ------------------------------------------------------------------------------
+# 1001           install the package even if this constitutes a downgrade of
+#                the package
+# 990 	         used as the default for the target release archive
+# 500 	         used as the default for the normal archive
+# 100 	         used as the default for the NotAutomatic and
+#                ButAutomaticUpgrades archive
+# 100 	         used for the installed package
+# 1 	         used as the default for the NotAutomatic archive
+# 0 < P < 100    causes a version to be installed only if there is no installed
+#                version of the package
+# -1 	         never install the package even if recommended 
+
+
+Package: *
+Pin: release a=unstable
+Pin-Priority: 50
+

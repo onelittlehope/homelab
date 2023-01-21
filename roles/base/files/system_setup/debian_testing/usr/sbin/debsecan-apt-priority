@@ -1,0 +1,40 @@
+#!/bin/sh
+
+##
+## This file is managed by Ansible.
+##
+
+# This program will add APT pinning for packages that are fixed in
+# unstable and not testing
+#
+# see https://bugs.debian.org/725934
+#     https://gist.github.com/khimaros/21db936fa7885360f7bfe7f116b78daf
+
+set -e
+
+echo "running debsecan check for issues fixed in unstable..." >&2
+
+rm -f /var/lib/debsecan/apt_preferences.disabled
+cat > /var/lib/debsecan/apt_preferences.disabled <<EOF
+# pin packages with security issues fixed in unstable
+# generated automatically on $(date) by $0
+
+EOF
+
+for pkg in $(debsecan --suite=sid --only-fixed | cut -d\  -f2 | sort -u) ; do
+    suite=unstable
+    case "$pkg" in
+        *-dbgsym)
+            suite=unstable-debug
+            ;;
+    esac
+    echo "adding pin to suite $suite for package $pkg" >&2
+    cat <<EOF >> /var/lib/debsecan/apt_preferences.disabled
+Package: $pkg
+Pin: release a=$suite
+Pin-Priority: 990
+
+EOF
+done
+chmod 644 /var/lib/debsecan/apt_preferences.disabled
+mv --force /var/lib/debsecan/apt_preferences.disabled /var/lib/debsecan/apt_preferences

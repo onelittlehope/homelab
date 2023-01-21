@@ -1,0 +1,5 @@
+##
+## This file is managed by Ansible.
+##
+
+APT::Update::Pre-Invoke { "/usr/sbin/debsecan-apt-priority"; };

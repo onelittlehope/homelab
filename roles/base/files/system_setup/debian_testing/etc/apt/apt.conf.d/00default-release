@@ -1,0 +1,5 @@
+##
+## This file is managed by Ansible.
+##
+
+APT::Default-Release "testing";

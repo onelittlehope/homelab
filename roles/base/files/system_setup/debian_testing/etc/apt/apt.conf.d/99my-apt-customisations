@@ -1,0 +1,82 @@
+##
+## This file is managed by Ansible.
+##
+
+# Aptitude config reference: https://www.debian.org/doc/manuals/aptitude/ch02s05s05.en.html
+# Description of escape sequences: https://www.debian.org/doc/manuals/aptitude/ch02s05s01.en.html
+
+APT {
+  AutoRemove {
+    # If this option is true, then aptitude will not consider packages to be
+    # unused (and thus will not automatically remove them) as long as any
+    # installed package recommends them.
+    RecommendsImportant "true";
+
+    # If this option is true, then aptitude will not consider packages to be
+    # unused (and thus will not automatically remove them) as long as any
+    # installed package suggests them.
+    SuggestsImportant "true";
+  };
+
+  # To solve the: "E: Dynamic MMap ran out of room. Please increase the size
+  # of APT::Cache-Limit."" error.
+  Cache-Limit "100000000";
+
+  # If this option is true and Aptitude::Auto-Install is true, then whenever
+  # you mark a package for installation, aptitude will also mark the packages
+  # it recommends for installation.
+  Install-Recommends "true";
+};
+
+Aptitude {
+  UI {
+    # If this option is true, a line of information about important keystrokes
+    # will be displayed at the top of the screen. 
+    HelpBar "false";
+
+    # If this option is true, aptitude will display tabs at the top of the
+    # information area (the pane at the bottom of the screen) describing the
+    # different modes the area can be set to.
+    InfoAreaTabs "true";
+
+    # If this option is set to true, the menu bar will be hidden while it is
+    # not in use.
+    MenuBar-Autohide "true";
+
+    # If this option is set to true, aptitude will use a less obtrusive
+    # mechanism to display the progress of downloads: a bar at the bottom
+    # of the screen will appear which displays the current download status.
+    # While the download is active, pressing q will abort it. 
+    Minibuf-Download-Bar "false";
+
+    # This option controls the format string used to display packages in
+    # package lists. Default = %c%a%M %p %Z %v %V
+    # - %c  Current State Flag
+    # - %a  Action Flag
+    # - %M  Automatic Flag
+    # - %S  Trust Status
+    # - %p  Package Name
+    # - %t  Archive
+    # - %v  Current Version
+    # - %V  Candidate Version
+    # - %i  Pin priority
+    Package-Display-Format "%c%a%M%S %p %t %v %V %i";
+
+    # This option controls the format string used to display the header line
+    # of package lists. Default = %N %n @ %H #%B %u %o
+    # - %N  Program Name
+    # - %n  Program Version
+    # - %B  Broken Count
+    # - %u  Disk Usage Change
+    # - %o  Download Size
+    Package-Header-Format "%N %n #%B %u %o";
+
+    # This option controls the format string used to display the status line
+    # of package lists. Default = %d
+    # - %d  Description
+    # - %D  Package Size
+    # - %I  Installed Size
+    # - %r  Reverse Depends Count
+    Package-Status-Format "%d #%D %I %r";
+  };
+};

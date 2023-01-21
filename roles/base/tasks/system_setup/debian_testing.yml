@@ -1,0 +1,190 @@
+---
+
+# ------------------------------------------------------------------------------
+# Purpose: Switch to using Debian 'testing' release with automatic security
+#          updates from 'unstable'
+#
+# Set up the /etc/apt/sources.list file which:
+#   - refers to 'testing' rather than a specific Debian release
+#   - uses a geographically close Debian mirror
+#   - has entries for 'unstable'
+#
+# Also sets the default release to be 'testing' so that we install packages
+# from 'testing' by default but if we manually upgrade some packages to
+# 'unstable', then we will get upgrades within that suite until those packages
+# migrate down to 'testing'.
+# ------------------------------------------------------------------------------
+
+- name: "debian_testing | Set up the '/etc/apt/sources.list' file"
+  ansible.builtin.copy:
+    src: "system_setup/debian_testing/etc/apt/sources.list"
+    dest: /etc/apt/sources.list
+    owner: root
+    group: root
+    mode: "0644"
+  register: apt_sources_list
+
+- name: "debian_testing | Set the default release to 'testing'"
+  ansible.builtin.copy:
+    src: "system_setup/debian_testing/etc/apt/apt.conf.d/00default-release"
+    dest: /etc/apt/apt.conf.d/00default-release
+    owner: root
+    group: root
+    mode: "0644"
+  register: default_release_to_testing
+
+# We need to workaround the following issue encountered when running 'apt-get
+# clean' or 'apt-get update' by informing apt that it should ignore the version
+# discrepancy it detected and update its database.
+#
+#   "E: The value 'testing' is invalid for APT::Default-Release as such a
+#       release is not available in the sources"
+#
+# - https://superuser.com/a/1457007
+# - https://github.com/ansible/ansible/issues/48352#issuecomment-913854897
+# - https://sleeplessbeastie.eu/2019/08/12/how-to-perform-suite-change/
+# - https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=931566
+
+- name: "debian_testing | Allow release-info to change for APT repositories"
+  ansible.builtin.command: apt-get update -y --allow-releaseinfo-change
+  when:  (apt_sources_list.changed or default_release_to_testing.changed)
+
+- name: "debian_testing | Upgrade all packages to latest versions"
+  ansible.builtin.apt:
+    autoremove: true
+    purge: true
+    upgrade: full
+  when:  (apt_sources_list.changed or default_release_to_testing.changed)
+
+# Set up 'debsecan' and its dependencies
+#
+# It is a best practice to install security updates from unstable since they
+# take extra time to reach testing and the security team only releases updates
+# to unstable. If we have unstable in our apt sources but pinned lower than
+# testing, we can automatically add temporary pinning for packages with
+# security issues fixed in unstable using the output of debsecan. The tasks
+# below install debsecan and its dependencies and sets up a script which will
+# add APT pinning for packages that are fixed in unstable and not testing. An
+# apt configuration file is also set up to call this script before invoking
+# dpkg. Additionally, an apt preferences file is set up to pin packages from
+# 'unstable'.
+#
+# - https://wiki.debian.org/DebianTesting
+# - https://bugs.debian.org/725934
+# - https://gist.github.com/khimaros/21db936fa7885360f7bfe7f116b78daf
+
+- name: "debian_testing | Installing 'debsecan' and its dependencies"
+  ansible.builtin.apt:
+    name:
+      - "debsecan"
+      - "msmtp"
+      - "msmtp-mta"
+    install_recommends: yes
+    state: latest
+  register: debsecan_installed
+
+- name: "debian_testing | Set up the '/usr/sbin/debsecan-apt-priority' script"
+  ansible.builtin.copy:
+    src: "system_setup/debian_testing/usr/sbin/debsecan-apt-priority"
+    dest: "/usr/sbin/debsecan-apt-priority"
+    owner: root
+    group: root
+    mode: "0755"
+  register: debsecan_apt_priority
+
+- name: "debian_testing | Ensure '/var/lib/debsecan/apt_preferences' file exists"
+  ansible.builtin.file:
+    path: "/var/lib/debsecan/apt_preferences"
+    group: root
+    owner: root
+    mode: "0644"
+    state: touch
+  # This file gets modified by the debsecan-apt-priority script on each
+  # invocation of apt and so we shouldn't care if this task registers a
+  # change each time the playbook is run.
+  changed_when: false
+
+- name: "debian_testing | Create the symlink '/var/lib/debsecan/apt_preferences' --> '/etc/apt/preferences.d/unstable-security-packages'"
+  ansible.builtin.file:
+    src: "/var/lib/debsecan/apt_preferences"
+    path: "/etc/apt/preferences.d/unstable-security-packages"
+    owner: root
+    group: root
+    mode: "0644"
+    state: link
+  register: debsecan_apt_preferences_symlink
+
+- name: "debian_testing | Set up the '/etc/apt/apt.conf.d/99debsecan' config file"
+  ansible.builtin.copy:
+    src: "system_setup/debian_testing/etc/apt/apt.conf.d/99debsecan"
+    dest: "/etc/apt/apt.conf.d/99debsecan"
+    owner: root
+    group: root
+    mode: "0644"
+  register: debsecan_apt_99debsecan_config_file
+
+- name: "debian_testing | Set up the '/etc/apt/apt.conf.d/99my-apt-customisations' config file"
+  ansible.builtin.copy:
+    src: "system_setup/debian_testing/etc/apt/apt.conf.d/99my-apt-customisations"
+    dest: "/etc/apt/apt.conf.d/99my-apt-customisations"
+    owner: root
+    group: root
+    mode: "0644"
+  register: debsecan_apt_99my_apt_customisations_config_file
+
+- name: "debian_testing | Creating the '/etc/apt/preferences.d/default-priority' config file"
+  ansible.builtin.copy:
+    src: "system_setup/debian_testing/etc/apt/preferences.d/default-priority"
+    dest: "/etc/apt/preferences.d/default-priority"
+    owner: root
+    group: root
+    mode: "0644"
+  register: debsecan_apt_default_priority_config_file
+
+- name: "debian_testing | Check if i386 architecture is enabled"
+  ansible.builtin.shell:
+    cmd: "dpkg --print-foreign-architectures | grep i386"
+  register: debsecan_dpkg_i386_arch_check
+  changed_when: debsecan_dpkg_i386_arch_check.rc == 1
+  failed_when: debsecan_dpkg_i386_arch_check.rc > 1
+
+- name: "debian_testing | Enable i386 architecture"
+  ansible.builtin.command:
+    cmd: "dpkg --add-architecture i386"
+  when: debsecan_dpkg_i386_arch_check.rc == 1
+
+# Update package cache and install OS updates again to pick up any security
+# updates from 'unstable'.
+
+- name: "debian_testing | Clean the apt package cache"
+  ansible.builtin.apt:
+    clean: yes
+  when:  (debsecan_installed.changed or
+          debsecan_apt_priority.changed or
+          debsecan_apt_preferences_symlink.changed  or
+          debsecan_apt_99debsecan_config_file.changed or
+          debsecan_apt_99my_apt_customisations_config_file.changed or
+          debsecan_apt_default_priority_config_file.changed or
+          debsecan_dpkg_i386_arch_check.rc == 1)
+
+- name: "debian_testing | Update the apt package index"
+  ansible.builtin.apt:
+    update_cache: yes
+  when:  (debsecan_installed.changed or
+          debsecan_apt_priority.changed or
+          debsecan_apt_preferences_symlink.changed  or
+          debsecan_apt_99debsecan_config_file.changed or
+          debsecan_apt_99my_apt_customisations_config_file.changed or
+          debsecan_apt_default_priority_config_file.changed or
+          debsecan_dpkg_i386_arch_check.rc == 1)
+
+- name: "debian_testing | Upgrade all packages to latest version"
+  ansible.builtin.apt:
+    upgrade: dist
+  when:  (debsecan_installed.changed or
+          debsecan_apt_priority.changed or
+          debsecan_apt_preferences_symlink.changed  or
+          debsecan_apt_99debsecan_config_file.changed or
+          debsecan_apt_99my_apt_customisations_config_file.changed or
+          debsecan_apt_default_priority_config_file.changed or
+          debsecan_dpkg_i386_arch_check.rc == 1)

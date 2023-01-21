@@ -1,0 +1,43 @@
+##
+## This file is managed by Ansible.
+##
+
+#-------------------------------------------------------------------------------
+#  _____ _____ ____ _____ ___ _   _  ____
+# |_   _| ____/ ___|_   _|_ _| \ | |/ ___|
+#   | | |  _| \___ \ | |  | ||  \| | |  _
+#   | | | |___ ___) || |  | || |\  | |_| |
+#   |_| |_____|____/ |_| |___|_| \_|\____|
+#-------------------------------------------------------------------------------
+
+deb https://www.mirrorservice.org/sites/ftp.debian.org/debian testing main contrib non-free non-free-firmware
+deb-src https://www.mirrorservice.org/sites/ftp.debian.org/debian testing main contrib non-free non-free-firmware
+
+deb https://www.mirrorservice.org/sites/ftp.debian.org/debian testing-backports main contrib non-free non-free-firmware
+deb-src https://www.mirrorservice.org/sites/ftp.debian.org/debian testing-backports main contrib non-free non-free-firmware
+
+deb https://www.mirrorservice.org/sites/ftp.debian.org/debian testing-proposed-updates main contrib non-free non-free-firmware
+deb-src https://www.mirrorservice.org/sites/ftp.debian.org/debian testing-proposed-updates main contrib non-free non-free-firmware
+
+deb https://www.mirrorservice.org/sites/ftp.debian.org/debian testing-updates main contrib non-free non-free-firmware
+deb-src https://www.mirrorservice.org/sites/ftp.debian.org/debian testing-updates main contrib non-free non-free-firmware
+
+deb https://security.debian.org/debian-security testing-security main contrib non-free non-free-firmware
+deb-src https://security.debian.org/debian-security testing-security main contrib non-free non-free-firmware
+
+#deb http://deb.debian.org/debian-debug/ testing-debug main contrib non-free non-free-firmware
+#deb http://deb.debian.org/debian-debug/ testing-backports-debug main contrib non-free non-free-firmware
+#deb http://deb.debian.org/debian-debug/ testing-proposed-updates-debug main contrib non-free non-free-firmware
+
+#-------------------------------------------------------------------------------
+#  _   _ _   _ ____ _____  _    ____  _     _____
+# | | | | \ | / ___|_   _|/ \  | __ )| |   | ____|
+# | | | |  \| \___ \ | | / _ \ |  _ \| |   |  _|
+# | |_| | |\  |___) || |/ ___ \| |_) | |___| |___
+#  \___/|_| \_|____/ |_/_/   \_\____/|_____|_____|
+#-------------------------------------------------------------------------------
+
+deb https://www.mirrorservice.org/sites/ftp.debian.org/debian unstable main contrib non-free non-free-firmware
+deb-src https://www.mirrorservice.org/sites/ftp.debian.org/debian unstable main contrib non-free non-free-firmware
+
+#deb http://deb.debian.org/debian-debug/ unstable-debug main contrib non-free non-free-firmware
