@@ -12,8 +12,7 @@
 ansible_pull_url: "https://github.com/onelittlehope/homelab.git"
 
 # Run on the 1st of every month at 2AM
-ansible_pull_timer: |
-  OnCalendar=*-*-01 02:00:00
+ansible_pull_timer: "OnCalendar=*-*-01 02:00:00"
 
 ansible_pull_user: ansible
 ansible_pull_group: ansible
