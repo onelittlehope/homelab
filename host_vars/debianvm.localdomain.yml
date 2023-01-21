@@ -1,0 +1,6 @@
+---
+# List of roles to include in a playbook run
+host_roles:
+  - "base"
+  - name: "base"
+    tasks_from: "system_setup/hyperv_vm"

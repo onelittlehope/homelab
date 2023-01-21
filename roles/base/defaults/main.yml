@@ -1,0 +1,20 @@
+---
+
+# ansible_pull_gitlab_key_title: "ansible_{{ ansible_hostname }}"
+# ansible_pull_gitlab_project: "onelittlehope/homelab"
+# ansible_pull_gitlab_url: "https://gitlab.com/""
+# ansible_pull_url: git@gitlab.com:onelittlehope/homelab.git
+
+# ansible_pull_github_key_title: "ansible_{{ ansible_hostname }}"
+# ansible_pull_github_owner: "onelittlehope"
+# ansible_pull_github_repo: "homelab"
+# ansible_pull_github_url: "https://api.github.com/"
+ansible_pull_url: "https://github.com/onelittlehope/homelab.git"
+
+# Run on the 1st of every month at 2AM
+ansible_pull_timer: |
+  OnCalendar=*-*-01 02:00:00
+
+ansible_pull_user: ansible
+ansible_pull_group: ansible
+ansible_pull_user_ssh_key_file: .ssh/id_ed25519

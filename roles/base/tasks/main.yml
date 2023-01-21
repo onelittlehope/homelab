@@ -1,0 +1,8 @@
+---
+
+- block:
+  # Set up the Ansible environment
+  - import_tasks: system_setup/ansible.yml
+
+  rescue:
+    - set_fact: task_failed=true

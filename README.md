@@ -1,2 +1,2 @@
-# homelab
+# Homelab
 Personal homelab setup

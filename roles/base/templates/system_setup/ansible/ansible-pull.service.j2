@@ -1,0 +1,14 @@
+{{ ansible_managed|comment }}
+
+[Unit]
+Description=Ansible system configuration management
+After=network-online.target
+
+[Service]
+User={{ ansible_pull_user }}
+Group={{ ansible_pull_group }}
+WorkingDirectory=/home/{{ ansible_pull_user }}
+EnvironmentFile=-/dev/shm/ansible.env
+ExecStartPre=/usr/bin/bash -c 'mkdir -p "/var/log/ansible"; chown -R {{ ansible_pull_user }}:{{ ansible_pull_group }} "/var/log/ansible"; echo -e ANSIBLE_HOST_PATTERN_MISMATCH=ignore\\\\nANSIBLE_LOG_PATH="/var/log/ansible/ansible.log"\\\\nANSIBLE_PYTHON_INTERPRETER="/usr/bin/python3" > /dev/shm/ansible.env'
+ExecStart=/usr/bin/bash -c 'ansible-pull --url "{{ ansible_pull_url }}" --clean --full'
+TimeoutStopSec=1800

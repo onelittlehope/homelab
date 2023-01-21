@@ -1,0 +1,30 @@
+---
+# debug_vars.yml
+#
+# Shows the value of all variables/facts.
+#
+# Example:
+#
+#   ansible-playbook debug_vars.yml
+#
+
+- hosts: localhost
+  connection: local
+  tasks:
+
+  # Gathers facts about remote hosts
+  - ansible.builtin.gather_facts:
+
+  # Return service state information as fact data
+  - ansible.builtin.service_facts:
+
+  # Package information as facts
+  - ansible.builtin.package_facts:
+
+  # Module Variables
+  - ansible.builtin.debug:
+      var: vars
+
+  # HOST Variables
+  - ansible.builtin.debug:
+      var: hostvars[inventory_hostname]

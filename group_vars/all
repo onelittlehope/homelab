@@ -1,0 +1,2 @@
+# Default list of roles to include in a playbook run
+host_roles: []

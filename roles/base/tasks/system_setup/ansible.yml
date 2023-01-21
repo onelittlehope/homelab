@@ -1,0 +1,157 @@
+---
+
+- name: "ansible | Create ansible group"
+  tags: ansible
+  ansible.builtin.group:
+    name: "{{ ansible_pull_group }}"
+    system: yes
+
+- name: "ansible | Create ansible user and generate a SSH key pair"
+  tags: ansible
+  ansible.builtin.user:
+    name: "{{ ansible_pull_user }}"
+    group: "{{ ansible_pull_group }}"
+    comment: Ansible system configuration management"
+    password_lock: yes
+    system: yes
+    shell: "/bin/bash"
+    generate_ssh_key: yes
+    ssh_key_type: "ed25519"
+    ssh_key_file: "{{ ansible_pull_user_ssh_key_file }}"
+    ssh_key_comment: "ansible@$HOSTNAME"
+  register: ansible_pull_user_created
+
+# - name: "Assign the ansible user's public SSH key to a variable"
+#   tags: ansible
+#   ansible.builtin.shell:
+#     cmd: cat "/home/{{ ansible_pull_user }}/{{ ansible_pull_user_ssh_key_file }}.pub"
+#   register: ansible_pull_user_public_key
+#   when: ansible_pull_user_created.changed
+
+# - name: "Add the ansible user's SSH key to the Gitlab project"
+#   tags: ansible
+#   community.general.gitlab_deploy_key:
+#     api_token: "{{ ansible_pull_gitlab_token }}"
+#     api_url: "{{ ansible_pull_gitlab_url }}"
+#     can_push: false
+#     key: "{{ ansible_pull_user_public_key.stdout_lines.0 }}"
+#     project: "{{ ansible_pull_gitlab_project }}"
+#     title: "{{ ansible_pull_gitlab_key_title }}"
+#   when: ansible_pull_user_created.changed
+
+# - name: "Add the ansible user's SSH key to the Github project"
+#   community.general.github_deploy_key:
+#     github_url: "{{ ansible_pull_github_url }}"
+#     key: "{{ ansible_pull_user_public_key.stdout_lines.0 }}"
+#     name: "{{ ansible_pull_github_key_title }}"
+#     owner: "{{ ansible_pull_github_owner }}"
+#     read_only: true
+#     repo: "{{ ansible_pull_github_repo }}"
+#     token: "{{ ansible_pull_github_token }}"
+#   when: ansible_pull_user_created.changed
+
+- name: "Add github.com public SSH keys to system wide known_hosts"
+  tags: ansible
+  ansible.builtin.known_hosts:
+    path: /etc/ssh/ssh_known_hosts
+    name: github.com
+    # Download the keys from the GitHub API and prepend 'github.com' to them to
+    # match the known_hosts format.
+    key: |
+      {% for key in (lookup('ansible.builtin.url',
+                            'https://api.github.com/meta',
+                            split_lines=False, validate_certs=True)
+                     |from_json)['ssh_keys'] %}
+      github.com {{ key }}
+      {% endfor %}
+  when: ansible_pull_user_created.changed
+
+# Source: https://docs.gitlab.com/ee/user/gitlab_com/#ssh-known_hosts-entries
+- name: "Add gitlab.com public SSH keys to system wide known_hosts"
+  tags: ansible
+  ansible.builtin.known_hosts:
+    path: /etc/ssh/ssh_known_hosts
+    name: gitlab.com
+    key: |
+      gitlab.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAfuCHKVTjquxvt6CM6tdG4SLp1Btn/nOeHHE5UOzRdf
+      gitlab.com ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCsj2bNKTBSpIYDEGk9KxsGh3mySTRgMtXL583qmBpzeQ+jqCMRgBqB98u3z++J1sKlXHWfM9dyhSevkMwSbhoR8XIq/U0tCNyokEi/ueaBMCvbcTHhO7FcwzY92WK4Yt0aGROY5qX2UKSeOvuP4D6TPqKF1onrSzH9bx9XUf2lEdWT/ia1NEKjunUqu1xOB/StKDHMoX4/OKyIzuS0q/T1zOATthvasJFoPrAjkohTyaDUz2LN5JoH839hViyEG82yB+MjcFV5MU3N1l1QL3cVUCh93xSaua1N85qivl+siMkPGbO5xR/En4iEY6K2XPASUEMaieWVNTRCtJ4S8H+9
+      gitlab.com ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBFSMqzJeV9rUzU4kWitGjeR4PWSa29SPqJ1fVkhtj3Hw9xjLVXVYrU9QlYWrOLXBpQ6KWjbjTDTdDkoohFzgbEY=
+  when: ansible_pull_user_created.changed
+
+- name: "ansible | Ensure Ansible + dependencies are at the latest version"
+  tags: ansible
+  ansible.builtin.apt:
+    name:
+      - "acl"
+      - "ansible"
+      - "apt-transport-https"
+      - "aptitude"
+      - "git"
+      - "python3-apt"
+      # - "python3-github"
+      # - "python3-gitlab"
+      - "sudo"
+    install_recommends: yes
+    state: latest
+  when: ansible_distribution in ["Debian"]
+
+- name: "ansible | Ensure Ansible log folder exists"
+  tags: ansible
+  ansible.builtin.file:
+    path: "/var/log/ansible"
+    owner: "{{ ansible_pull_user }}"
+    group: "{{ ansible_pull_group }}"
+    mode: "0755"
+    state: directory
+  changed_when: False
+
+- name: "ansible | Ensure Ansible log file exists"
+  tags: ansible
+  ansible.builtin.file:
+    path: "/var/log/ansible/ansible.log"
+    owner: "{{ ansible_pull_user }}"
+    group: "{{ ansible_pull_group }}"
+    mode: "0640"
+    state: touch
+  changed_when: False
+
+- name: "ansible | Add logrotate config for the Ansible log file"
+  tags: ansible
+  ansible.builtin.copy:
+    src: "files/system_setup/ansible/logrotate"
+    dest: /"etc/logrotate.d/ansible"
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: "ansible | Allow Ansible user to run any command/any host/any user"
+  tags: ansible
+  community.general.sudoers:
+    name: "{{ ansible_pull_user }}"
+    user: "{{ ansible_pull_user }}"
+    runas: ALL
+    nopassword: true
+    commands: ALL
+
+- name: "ansible | Add systemd units for ansible-pull"
+  tags: ansible
+  ansible.builtin.template:
+    dest: /etc/systemd/system
+    src: "{{ item }}"
+    owner: root
+    group: root
+    mode: "0644"
+  loop:
+    - "system_setup/ansible/ansible-pull.service"
+    - "system_setup/ansible/ansible-pull.timer"
+
+- name: "ansible | Enable the ansible-pull systemd units"
+  tags: ansible
+  ansible.builtin.service:
+    name: "{{ item }}"
+    state: "started"
+    enabled: true
+    daemon_reload : true
+  loop:
+    - ansible-pull.service
+    - ansible-pull.timer

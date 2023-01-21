@@ -1,0 +1,45 @@
+# Tasks to complete before running roles
+- hosts: all
+  tags: always
+  become: true
+  pre_tasks:
+    - name: "Update apt package cache"
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 3600
+      changed_when: False
+      when: ansible_distribution in ["Debian"]
+
+# Run roles
+- hosts: all
+  become: true
+  tasks:
+    # Include per-host list of roles
+    - include_role:
+        name: '{{ host_role.name | default(host_role) }}'
+        tasks_from: '{{ host_role.tasks_from | default("main") }}'
+        apply:
+          tags:
+            - '{{ host_role.name | default(host_role) }}'
+      loop: '{{ host_roles }}'
+      loop_control:
+        loop_var: host_role
+      tags:
+        - always
+
+# Clean up
+- hosts: all
+  tags: always
+  become: true
+  tasks:
+  - name: "Clean up apt package cache"
+    ansible.builtin.apt:
+      autoclean: yes
+    changed_when: false
+    when: ansible_distribution in ["Debian"]
+
+  - name: "Auto remove orphan packages"
+    ansible.builtin.apt:
+      autoremove: yes
+      purge: yes
+    when: ansible_distribution in ["Debian"]
