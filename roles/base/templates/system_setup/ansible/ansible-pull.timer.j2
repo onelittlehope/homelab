@@ -6,7 +6,7 @@ Description=Ansible system configuration management
 [Timer]
 {{ ansible_pull_timer }}
 Unit=ansible-pull.service
-Persistent=true
+Persistent=false
 
 [Install]
 WantedBy=multi-user.target
