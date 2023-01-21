@@ -142,8 +142,8 @@
     group: root
     mode: "0644"
   loop:
-    - "system_setup/ansible/ansible-pull.service"
-    - "system_setup/ansible/ansible-pull.timer"
+    - "system_setup/ansible/ansible-pull.service.j2"
+    - "system_setup/ansible/ansible-pull.timer.j2"
 
 - name: "ansible | Enable the ansible-pull systemd units"
   tags: ansible
