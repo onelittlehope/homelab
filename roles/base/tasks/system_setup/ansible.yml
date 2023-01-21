@@ -136,7 +136,7 @@
 - name: "ansible | Add systemd units for ansible-pull"
   tags: ansible
   ansible.builtin.template:
-    dest: /etc/systemd/system
+    dest: "/etc/systemd/system/{{ item | basename | regex_replace('\\.j2$', '') }}"
     src: "{{ item }}"
     owner: root
     group: root
