@@ -188,16 +188,17 @@
 - name: "packages | standard | Install dasel"
   tags: standard, packages
   block:
-    - name: "packages | standard | Get the latest release tag for dasel"
-      github_release:
-        user: TomWright
-        repo: dasel
-        action: latest_release
-      register: dasel_latest 
+    # Source: https://stackoverflow.com/a/75117119/76938
+    - name: "packages | standard | Get latest release details for dasel"
+      ansible.builtin.uri:
+        url: "https://api.github.com/repos/TomWright/dasel/releases/latest"
+        method: GET
+        return_content: yes
+      register: dasel_release
 
     - name: "packages | standard | Download / install dasel"
       ansible.builtin.get_url:
-        url: "https://github.com/TomWright/dasel/releases/download/{{ dasel_latest['tag'] }}/dasel_linux_amd64"
+        url: "https://github.com/TomWright/dasel/releases/download/{{ dasel_release.json.tag_name }}/dasel_linux_amd64"
         dest: "/usr/local/bin/dasel"
         owner: root
         group: root
@@ -206,31 +207,33 @@
 - name: "packages | standard | Install chezmoi"
   tags: standard, packages
   block:
-    - name: "packages | standard | Get the latest release tag for chezmoi"
-      github_release:
-        user: twpayne
-        repo: chezmoi
-        action: latest_release
-      register: chezmoi_latest 
+    # Source: https://stackoverflow.com/a/75117119/76938
+    - name: "packages | standard | Get latest release details for chezmoi"
+      ansible.builtin.uri:
+        url: "https://api.github.com/repos/twpayne/chezmoi/releases/latest"
+        method: GET
+        return_content: yes
+      register: chezmoi_release
 
     - name: "packages | standard | Download / install chezmoi"
       ansible.builtin.apt:
-        deb: "https://github.com/twpayne/chezmoi/releases/download/{{ chezmoi_latest['tag'] }}/chezmoi_{{ chezmoi_latest['tag'] | regex_replace('^v','') }}_linux_amd64.deb"
+        deb: "https://github.com/twpayne/chezmoi/releases/download/{{ chezmoi_release.json.tag_name }}/chezmoi_{{ chezmoi_release.json.tag_name | regex_replace('^v','') }}_linux_amd64.deb"
         install_recommends: yes
         state: present
 
 - name: "packages | standard | Install Git Delta"
   tags: standard, packages
   block:
-    - name: "packages | standard | Get the latest release tag for Git Delta"
-      github_release:
-        user: dandavison
-        repo: delta
-        action: latest_release
-      register: delta_latest 
+    # Source: https://stackoverflow.com/a/75117119/76938
+    - name: "packages | standard | Get latest release details for Git Delta"
+      ansible.builtin.uri:
+        url: "https://api.github.com/repos/dandavison/delta/releases/latest"
+        method: GET
+        return_content: yes
+      register: git_delta_release
 
     - name: "packages | standard | Download / install Git Delta"
       ansible.builtin.apt:
-        deb: "https://github.com/dandavison/delta/releases/download/{{ delta_latest['tag'] }}/git-delta_{{ delta_latest['tag'] }}_amd64.deb"
+        deb: "https://github.com/dandavison/delta/releases/download/{{ git_delta_release.json.tag_name }}/git-delta_{{ git_delta_release.json.tag_name }}_amd64.deb"
         install_recommends: yes
         state: present
