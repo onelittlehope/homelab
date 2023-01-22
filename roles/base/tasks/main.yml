@@ -15,7 +15,7 @@
 
   # Perform remaining system setup tasks
   - import_tasks: system_setup/sshd.yml
-  - import_tasks: system_setup/apt-listchanges.yml
+  - import_tasks: system_setup/apt_listchanges.yml
 
   rescue:
     - set_fact: task_failed=true
