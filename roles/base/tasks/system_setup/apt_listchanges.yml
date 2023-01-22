@@ -13,6 +13,13 @@
       confirm=false
       headers=true
       reverse=false
+
+      [cmdline]
+      frontend=log
+      which=both
+      confirm=false
+      headers=true
+      reverse=false
     owner: root
     group: root
     mode: "0644"
