@@ -4,5 +4,18 @@
   # Set up the Ansible environment
   - import_tasks: system_setup/ansible.yml
 
+  # Install standard packages
+  - import_tasks: packages/standard.yml
+
+  # Remove unwanted packages
+  - import_tasks: packages/unwanted.yml
+
+  # Make sure unwanted packages aren't ever installed
+  - import_tasks: packages/unwanted_pinned.yml
+
+  # Perform remaining system setup tasks
+  - import_tasks: system_setup/sshd.yml
+  - import_tasks: system_setup/apt-listchanges.yml
+
   rescue:
     - set_fact: task_failed=true

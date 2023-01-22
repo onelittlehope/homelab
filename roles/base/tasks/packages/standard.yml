@@ -1,0 +1,236 @@
+---
+
+- name: "packages | standard | Install standard packages"
+  tags: standard, packages
+  ansible.builtin.apt:
+    name:
+      # --------------------------------------------------------------------
+      # Debian's "standard" packages (aptitude search ~pstandard -F"%p")
+      # --------------------------------------------------------------------
+      - "apt-listchanges"
+      - "bash-completion"
+      - "bind9-dnsutils"
+      - "bind9-host"
+      - "bind9-libs"
+      - "bsdextrautils"
+      - "ca-certificates"
+      - "console-data"
+      - "dbus"
+      - "debian-faq"
+      - "e2fsprogs-l10n"
+      - "file"
+      - "groff-base"
+      - "inetutils-telnet"
+      - "libfribidi0"
+      - "libgpg-error-l10n"
+      - "libgpm2"
+      - "libnss-systemd"
+      - "libpam-cap"
+      - "libpam-systemd"
+      - "lsof"
+      - "man-db"
+      - "manpages"
+      - "mime-support"
+      - "ncurses-term"
+      - "psmisc"
+      - "reportbug"
+      - "systemd-timesyncd"
+      - "traceroute"
+      - "unicode-data"
+      - "uuid-runtime"
+      - "xxd"
+      - "zstd"
+      # --------------------------------------------------------------------
+      # My standard packages
+      # --------------------------------------------------------------------
+      - "acl"
+      - "anacron"
+      - "ansible"
+      - "apt-file"
+      - "apt-rdepends"
+      - "apt-show-versions"
+      - "apt-transport-https"
+      - "aptitude"
+      - "attr"
+      - "bash-doc"
+      - "bmon"
+      - "bridge-utils"
+      - "btrbk"
+      - "btrfs-compsize"
+      - "btrfs-progs"
+      - "btrfsmaintenance"
+      - "bzip2"
+      - "cifs-utils"
+      - "cpulimit"
+      - "cryptsetup"
+      - "cryptsetup-initramfs"
+      - "curl"
+      - "debian-handbook"
+      - "debian-reference-en"
+      - "deborphan"
+      - "debsums"
+      - "doc-debian"
+      - "dos2unix"
+      - "dosfstools"
+      - "efivar"
+      - "etherwake"
+      - "ethtool"
+      - "exa"
+      - "exfat-fuse"
+      - "fdupes"
+      - "figlet"
+      - "geoipupdate"
+      - "git"
+      - "git-doc"
+      - "git-lfs"
+      - "gitmagic"
+      - "gnupg"
+      - "harden-doc"
+      - "ht"
+      - "htop"
+      - "hunspell"
+      - "hunspell-en-gb"
+      - "hwdata"
+      - "hwinfo"
+      - "ibritish-insane"
+      - "iftop"
+      - "info"
+      - "iotop-c"
+      - "ipcalc"
+      - "iperf"
+      - "iptraf-ng"
+      - "jargon-text"
+      - "journal-brief"
+      - "jq"
+      - "keychain"
+      - "keyutils"
+      - "lftp"
+      - "lrzsz"
+      - "lshw"
+      - "ltrace"
+      - "lz4"
+      - "mc"
+      - "memtest86+"
+      - "miscfiles"
+      - "mmdb-bin"
+      - "mmv"
+      - "mtr-tiny"
+      - "ncat"
+      - "ncdu"
+      - "net-tools"
+      - "netcat-openbsd"
+      - "nethogs"
+      - "ngrep"
+      - "nmap"
+      - "ntfs-3g"
+      - "openresolv"
+      - "openssh-server"
+      - "openvpn"
+      - "p7zip-full"
+      - "p7zip-rar"
+      - "parted"
+      - "patchutils"
+      - "perl-doc"
+      - "pwgen"
+      - "python-is-python3"
+      - "python3-apt"
+      - "python3-doc"
+      - "python3-gitlab"
+      - "qalc"
+      - "rar"
+      - "recode"
+      - "restic"
+      - "ripgrep"
+      - "rsync"
+      - "s-nail"
+      - "scrub"
+      - "shellcheck"
+      - "sipcalc"
+      - "socat"
+      - "strace"
+      - "stress"
+      - "sudo"
+      - "symlinks"
+      - "syncthing"
+      - "sysstat"
+      - "tcpdump"
+      - "tmux"
+      - "tree"
+      - "trickle"
+      - "tshark"
+      - "units"
+      - "unrar"
+      - "unzip"
+      - "usbutils"
+      - "vim"
+      - "vim-doc"
+      - "w3m"
+      - "wbritish-insane"
+      - "whois"
+      - "wireguard"
+      - "wireshark-doc"
+      - "xfsdump"
+      - "xfsprogs"
+      - "xz-utils"
+      - "zip"
+    install_recommends: yes
+    state: latest
+
+- name: "Install ps_mem.py"
+  tags: standard, packages
+  ansible.builtin.get_url:
+    url: "https://raw.githubusercontent.com/pixelb/ps_mem/master/ps_mem.py"
+    dest: "/usr/local/bin/ps_mem.py"
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: "packages | standard | Install dasel"
+  tags: standard, packages
+  block:
+    - name: "packages | standard | Get the latest release tag for dasel"
+      github_release:
+        user: TomWright
+        repo: dasel
+        action: latest_release
+      register: dasel_latest 
+
+    - name: "packages | standard | Download / install dasel"
+      ansible.builtin.get_url:
+        url: "https://github.com/TomWright/dasel/releases/download/{{ dasel_latest['tag'] }}/dasel_linux_amd64"
+        dest: "/usr/local/bin/dasel"
+        owner: root
+        group: root
+        mode: "0755"
+
+- name: "packages | standard | Install chezmoi"
+  tags: standard, packages
+  block:
+    - name: "packages | standard | Get the latest release tag for chezmoi"
+      github_release:
+        user: twpayne
+        repo: chezmoi
+        action: latest_release
+      register: chezmoi_latest 
+
+    - name: "packages | standard | Download / install chezmoi"
+      ansible.builtin.apt:
+        deb: "https://github.com/twpayne/chezmoi/releases/download/{{ chezmoi_latest['tag'] }}/chezmoi_{{ chezmoi_latest['tag'] | regex_replace('^v','') }}_linux_amd64.deb"
+        install_recommends: yes
+        state: present
+
+- name: "packages | standard | Install Git Delta"
+  tags: standard, packages
+  block:
+    - name: "packages | standard | Get the latest release tag for Git Delta"
+      github_release:
+        user: dandavison
+        repo: delta
+        action: latest_release
+      register: delta_latest 
+
+    - name: "packages | standard | Download / install Git Delta"
+      ansible.builtin.apt:
+        deb: "https://github.com/dandavison/delta/releases/download/{{ delta_latest['tag'] }}/git-delta_{{ delta_latest['tag'] }}_amd64.deb"
+        install_recommends: yes
+        state: present

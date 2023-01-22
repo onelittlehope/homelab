@@ -1,13 +1,13 @@
 ---
 
-- name: "ansible | Create ansible group"
-  tags: ansible
+- name: "system_setup | ansible | Create ansible group"
+  tags: ansible, system_setup
   ansible.builtin.group:
     name: "{{ ansible_pull_group }}"
     system: yes
 
-- name: "ansible | Create ansible user and generate a SSH key pair"
-  tags: ansible
+- name: "system_setup | ansible | Create ansible user and generate a SSH key pair"
+  tags: ansible, system_setup
   ansible.builtin.user:
     name: "{{ ansible_pull_user }}"
     group: "{{ ansible_pull_group }}"
@@ -21,15 +21,15 @@
     ssh_key_comment: "ansible@$HOSTNAME"
   register: ansible_pull_user_created
 
-# - name: "Assign the ansible user's public SSH key to a variable"
-#   tags: ansible
+# - name: "system_setup | ansible | Assign the ansible user's public SSH key to a variable"
+#   tags: ansible, system_setup
 #   ansible.builtin.shell:
 #     cmd: cat "/home/{{ ansible_pull_user }}/{{ ansible_pull_user_ssh_key_file }}.pub"
 #   register: ansible_pull_user_public_key
 #   when: ansible_pull_user_created.changed
 
-# - name: "Add the ansible user's SSH key to the Gitlab project"
-#   tags: ansible
+# - name: "system_setup | ansible | Add the ansible user's SSH key to the Gitlab project"
+#   tags: ansible, system_setup
 #   community.general.gitlab_deploy_key:
 #     api_token: "{{ ansible_pull_gitlab_token }}"
 #     api_url: "{{ ansible_pull_gitlab_url }}"
@@ -39,7 +39,8 @@
 #     title: "{{ ansible_pull_gitlab_key_title }}"
 #   when: ansible_pull_user_created.changed
 
-# - name: "Add the ansible user's SSH key to the Github project"
+# - name: "system_setup | ansible | Add the ansible user's SSH key to the Github project"
+#   tags: ansible, system_setup
 #   community.general.github_deploy_key:
 #     github_url: "{{ ansible_pull_github_url }}"
 #     key: "{{ ansible_pull_user_public_key.stdout_lines.0 }}"
@@ -50,8 +51,8 @@
 #     token: "{{ ansible_pull_github_token }}"
 #   when: ansible_pull_user_created.changed
 
-- name: "Add github.com public SSH keys to system wide known_hosts"
-  tags: ansible
+- name: "system_setup | ansible | Add github.com public SSH keys to system wide known_hosts"
+  tags: ansible, system_setup
   ansible.builtin.known_hosts:
     path: /etc/ssh/ssh_known_hosts
     name: github.com
@@ -67,8 +68,8 @@
   when: ansible_pull_user_created.changed
 
 # Source: https://docs.gitlab.com/ee/user/gitlab_com/#ssh-known_hosts-entries
-- name: "Add gitlab.com public SSH keys to system wide known_hosts"
-  tags: ansible
+- name: "system_setup | ansible | Add gitlab.com public SSH keys to system wide known_hosts"
+  tags: ansible, system_setup
   ansible.builtin.known_hosts:
     path: /etc/ssh/ssh_known_hosts
     name: gitlab.com
@@ -78,8 +79,8 @@
       gitlab.com ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBFSMqzJeV9rUzU4kWitGjeR4PWSa29SPqJ1fVkhtj3Hw9xjLVXVYrU9QlYWrOLXBpQ6KWjbjTDTdDkoohFzgbEY=
   when: ansible_pull_user_created.changed
 
-- name: "ansible | Ensure Ansible + dependencies are at the latest version"
-  tags: ansible
+- name: "system_setup | ansible | Ensure Ansible + dependencies are at the latest version"
+  tags: ansible, system_setup
   ansible.builtin.apt:
     name:
       - "acl"
@@ -88,15 +89,14 @@
       - "aptitude"
       - "git"
       - "python3-apt"
-      # - "python3-github"
-      # - "python3-gitlab"
+      - "python3-github"
+      - "python3-gitlab"
       - "sudo"
     install_recommends: yes
     state: latest
-  when: ansible_distribution in ["Debian"]
 
-- name: "ansible | Ensure Ansible log folder exists"
-  tags: ansible
+- name: "system_setup | ansible | Ensure Ansible log folder exists"
+  tags: ansible, system_setup
   ansible.builtin.file:
     path: "/var/log/ansible"
     owner: "{{ ansible_pull_user }}"
@@ -105,8 +105,8 @@
     state: directory
   changed_when: False
 
-- name: "ansible | Ensure Ansible log file exists"
-  tags: ansible
+- name: "system_setup | ansible | Ensure Ansible log file exists"
+  tags: ansible, system_setup
   ansible.builtin.file:
     path: "/var/log/ansible/ansible.log"
     owner: "{{ ansible_pull_user }}"
@@ -115,8 +115,8 @@
     state: touch
   changed_when: False
 
-- name: "ansible | Add logrotate config for the Ansible log file"
-  tags: ansible
+- name: "system_setup | ansible | Add logrotate config for the Ansible log file"
+  tags: ansible, system_setup
   ansible.builtin.copy:
     src: "files/system_setup/ansible/logrotate"
     dest: "/etc/logrotate.d/ansible"
@@ -124,8 +124,8 @@
     group: root
     mode: "0644"
 
-- name: "ansible | Allow Ansible user to run any command/any host/any user"
-  tags: ansible
+- name: "system_setup | ansible | Allow Ansible user to run any command/any host/any user"
+  tags: ansible, system_setup
   community.general.sudoers:
     name: "{{ ansible_pull_user }}"
     user: "{{ ansible_pull_user }}"
@@ -133,8 +133,8 @@
     nopassword: true
     commands: ALL
 
-- name: "ansible | Add systemd units for ansible-pull"
-  tags: ansible
+- name: "system_setup | ansible | Add systemd units for ansible-pull"
+  tags: ansible, system_setup
   ansible.builtin.template:
     dest: "/etc/systemd/system/{{ item | basename | regex_replace('\\.j2$', '') }}"
     src: "{{ item }}"
@@ -145,8 +145,8 @@
     - "system_setup/ansible/ansible-pull.service.j2"
     - "system_setup/ansible/ansible-pull.timer.j2"
 
-- name: "ansible | Enable the ansible-pull systemd timer"
-  tags: ansible
+- name: "system_setup | ansible | Enable the ansible-pull systemd timer"
+  tags: ansible, system_setup
   ansible.builtin.service:
     name: "{{ item }}"
     state: "started"

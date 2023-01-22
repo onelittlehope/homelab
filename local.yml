@@ -8,7 +8,6 @@
         update_cache: true
         cache_valid_time: 3600
       changed_when: False
-      when: ansible_distribution in ["Debian"]
 
 # Run roles
 - hosts: all
@@ -36,10 +35,8 @@
     ansible.builtin.apt:
       autoclean: yes
     changed_when: false
-    when: ansible_distribution in ["Debian"]
 
   - name: "Auto remove orphan packages"
     ansible.builtin.apt:
       autoremove: yes
       purge: yes
-    when: ansible_distribution in ["Debian"]

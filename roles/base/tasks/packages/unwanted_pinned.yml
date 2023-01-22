@@ -1,0 +1,27 @@
+---
+
+- name: "packages | unwanted_pinned | Pin unwanted packages"
+  tags: unwanted_pinned, packages
+  ansible.builtin.blockinfile:
+    path: "/etc/apt/preferences.d/unwanted-packages"
+    # New lines in the block are required!
+    block: |
+      {% for i in pkgs_to_pin %}
+
+      Package: {{ i }}
+      Pin: release o=Debian
+      Pin-Priority: -10
+
+      {% endfor %}
+    create: true
+    owner: root
+    group: root
+    mode: "0644"
+    vars:
+      pkgs_to_pin:
+        - "iamerican"
+        - "ibritish"
+        - "krb5-locales"
+        - "libatm1"
+        - "wamerican"
+        - "wbritish"

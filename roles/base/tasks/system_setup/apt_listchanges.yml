@@ -1,0 +1,27 @@
+---
+
+# We keep track of what has been changed in new versions of Debian packages
+
+- name: "system_setup | apt_listchanges | Configure apt-listchanges to log what has been changed in new versions of Debian packages"
+  tags: apt_listchanges, system_setup
+  ansible.builtin.copy:
+    dest: "/etc/apt/listchanges.conf.d/apt.conf"
+    content: |
+      [apt]
+      frontend=log
+      which=both
+      confirm=false
+      headers=true
+      reverse=false
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: "system_setup | apt_listchanges | Add logrotate config for the apt-listchanges log file"
+  tags: apt_listchanges, system_setup
+  ansible.builtin.copy:
+    src: "files/system_setup/apt_listchanges/logrotate"
+    dest: "/etc/logrotate.d/apt_listchanges"
+    owner: root
+    group: root
+    mode: "0644"

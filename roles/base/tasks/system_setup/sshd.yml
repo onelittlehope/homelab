@@ -1,0 +1,20 @@
+---
+
+# We don't want the sshd.service to always be running. It should only start up
+# when a connection is made to it.
+
+- name: "system_setup | sshd | Disable the ssh.service"
+  tags: sshd, system_setup
+  ansible.builtin.systemd:
+    daemon_reload : true
+    enabled: false
+    state: stopped
+    name: "ssh.service"
+
+- name: "system_setup | sshd | Enable socket-based activation of sshd via systemd"
+  tags: sshd, system_setup
+  ansible.builtin.systemd:
+    daemon_reload : true
+    enabled: true
+    state: started
+    name: "ssh.socket"

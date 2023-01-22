@@ -1,0 +1,12 @@
+---
+
+- name: "packages | unwanted | Remove unwanted packages"
+  tags: unwanted, packages
+  ansible.builtin.apt:
+    name:
+      - "iamerican"
+      - "ibritish"
+      - "wamerican"
+      - "wbritish"
+    purge: true
+    state: "absent"

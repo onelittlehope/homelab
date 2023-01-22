@@ -15,7 +15,8 @@
 # migrate down to 'testing'.
 # ------------------------------------------------------------------------------
 
-- name: "debian_testing | Set up the '/etc/apt/sources.list' file"
+- name: "system_setup | debian_testing | Set up the '/etc/apt/sources.list' file"
+  tags: debian_testing, system_setup
   ansible.builtin.copy:
     src: "system_setup/debian_testing/etc/apt/sources.list"
     dest: /etc/apt/sources.list
@@ -24,7 +25,8 @@
     mode: "0644"
   register: apt_sources_list
 
-- name: "debian_testing | Set the default release to 'testing'"
+- name: "system_setup | debian_testing | Set the default release to 'testing'"
+  tags: debian_testing, system_setup
   ansible.builtin.copy:
     src: "system_setup/debian_testing/etc/apt/apt.conf.d/00default-release"
     dest: /etc/apt/apt.conf.d/00default-release
@@ -45,11 +47,13 @@
 # - https://sleeplessbeastie.eu/2019/08/12/how-to-perform-suite-change/
 # - https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=931566
 
-- name: "debian_testing | Allow release-info to change for APT repositories"
+- name: "system_setup | debian_testing | Allow release-info to change for APT repositories"
+  tags: debian_testing, system_setup
   ansible.builtin.command: apt-get update -y --allow-releaseinfo-change
   when:  (apt_sources_list.changed or default_release_to_testing.changed)
 
-- name: "debian_testing | Upgrade all packages to latest versions"
+- name: "system_setup | debian_testing | Upgrade all packages to latest versions"
+  tags: debian_testing, system_setup
   ansible.builtin.apt:
     autoremove: true
     purge: true
@@ -73,7 +77,8 @@
 # - https://bugs.debian.org/725934
 # - https://gist.github.com/khimaros/21db936fa7885360f7bfe7f116b78daf
 
-- name: "debian_testing | Installing 'debsecan' and its dependencies"
+- name: "system_setup | debian_testing | Installing 'debsecan' and its dependencies"
+  tags: debian_testing, system_setup
   ansible.builtin.apt:
     name:
       - "debsecan"
@@ -83,7 +88,8 @@
     state: latest
   register: debsecan_installed
 
-- name: "debian_testing | Set up the '/usr/sbin/debsecan-apt-priority' script"
+- name: "system_setup | debian_testing | Set up the '/usr/sbin/debsecan-apt-priority' script"
+  tags: debian_testing, system_setup
   ansible.builtin.copy:
     src: "system_setup/debian_testing/usr/sbin/debsecan-apt-priority"
     dest: "/usr/sbin/debsecan-apt-priority"
@@ -92,7 +98,8 @@
     mode: "0755"
   register: debsecan_apt_priority
 
-- name: "debian_testing | Ensure '/var/lib/debsecan/apt_preferences' file exists"
+- name: "system_setup | debian_testing | Ensure '/var/lib/debsecan/apt_preferences' file exists"
+  tags: debian_testing, system_setup
   ansible.builtin.file:
     path: "/var/lib/debsecan/apt_preferences"
     group: root
@@ -104,7 +111,8 @@
   # change each time the playbook is run.
   changed_when: false
 
-- name: "debian_testing | Create the symlink '/var/lib/debsecan/apt_preferences' --> '/etc/apt/preferences.d/unstable-security-packages'"
+- name: "system_setup | debian_testing | Create the symlink '/var/lib/debsecan/apt_preferences' --> '/etc/apt/preferences.d/unstable-security-packages'"
+  tags: debian_testing, system_setup
   ansible.builtin.file:
     src: "/var/lib/debsecan/apt_preferences"
     path: "/etc/apt/preferences.d/unstable-security-packages"
@@ -114,7 +122,8 @@
     state: link
   register: debsecan_apt_preferences_symlink
 
-- name: "debian_testing | Set up the '/etc/apt/apt.conf.d/99debsecan' config file"
+- name: "system_setup | debian_testing | Set up the '/etc/apt/apt.conf.d/99debsecan' config file"
+  tags: debian_testing, system_setup
   ansible.builtin.copy:
     src: "system_setup/debian_testing/etc/apt/apt.conf.d/99debsecan"
     dest: "/etc/apt/apt.conf.d/99debsecan"
@@ -123,7 +132,8 @@
     mode: "0644"
   register: debsecan_apt_99debsecan_config_file
 
-- name: "debian_testing | Set up the '/etc/apt/apt.conf.d/99my-apt-customisations' config file"
+- name: "system_setup | debian_testing | Set up the '/etc/apt/apt.conf.d/99my-apt-customisations' config file"
+  tags: debian_testing, system_setup
   ansible.builtin.copy:
     src: "system_setup/debian_testing/etc/apt/apt.conf.d/99my-apt-customisations"
     dest: "/etc/apt/apt.conf.d/99my-apt-customisations"
@@ -132,7 +142,8 @@
     mode: "0644"
   register: debsecan_apt_99my_apt_customisations_config_file
 
-- name: "debian_testing | Creating the '/etc/apt/preferences.d/default-priority' config file"
+- name: "system_setup | debian_testing | Creating the '/etc/apt/preferences.d/default-priority' config file"
+  tags: debian_testing, system_setup
   ansible.builtin.copy:
     src: "system_setup/debian_testing/etc/apt/preferences.d/default-priority"
     dest: "/etc/apt/preferences.d/default-priority"
@@ -141,14 +152,16 @@
     mode: "0644"
   register: debsecan_apt_default_priority_config_file
 
-- name: "debian_testing | Check if i386 architecture is enabled"
+- name: "system_setup | debian_testing | Check if i386 architecture is enabled"
+  tags: debian_testing, system_setup
   ansible.builtin.shell:
     cmd: "dpkg --print-foreign-architectures | grep i386"
   register: debsecan_dpkg_i386_arch_check
   changed_when: debsecan_dpkg_i386_arch_check.rc == 1
   failed_when: debsecan_dpkg_i386_arch_check.rc > 1
 
-- name: "debian_testing | Enable i386 architecture"
+- name: "system_setup | debian_testing | Enable i386 architecture"
+  tags: debian_testing, system_setup
   ansible.builtin.command:
     cmd: "dpkg --add-architecture i386"
   when: debsecan_dpkg_i386_arch_check.rc == 1
@@ -156,7 +169,8 @@
 # Update package cache and install OS updates again to pick up any security
 # updates from 'unstable'.
 
-- name: "debian_testing | Clean the apt package cache"
+- name: "system_setup | debian_testing | Clean the apt package cache"
+  tags: debian_testing, system_setup
   ansible.builtin.apt:
     clean: yes
   when:  (debsecan_installed.changed or
@@ -167,7 +181,8 @@
           debsecan_apt_default_priority_config_file.changed or
           debsecan_dpkg_i386_arch_check.rc == 1)
 
-- name: "debian_testing | Update the apt package index"
+- name: "system_setup | debian_testing | Update the apt package index"
+  tags: debian_testing, system_setup
   ansible.builtin.apt:
     update_cache: yes
   when:  (debsecan_installed.changed or
@@ -178,7 +193,8 @@
           debsecan_apt_default_priority_config_file.changed or
           debsecan_dpkg_i386_arch_check.rc == 1)
 
-- name: "debian_testing | Upgrade all packages to latest version"
+- name: "system_setup | debian_testing | Upgrade all packages to latest version"
+  tags: debian_testing, system_setup
   ansible.builtin.apt:
     upgrade: dist
   when:  (debsecan_installed.changed or

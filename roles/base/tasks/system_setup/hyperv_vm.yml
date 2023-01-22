@@ -1,10 +1,9 @@
 ---
 
-- name: "hyperv_vm | Ensure Hyper-v guest packages are at their latest versions"
-  tags: hyperv_vm
+- name: "system_setup | hyperv_vm | Ensure Hyper-v guest packages are at their latest versions"
+  tags: hyperv_vm, system_setup
   ansible.builtin.apt:
     name:
       - "hyperv-daemons"
     install_recommends: yes
     state: latest
-  when: ansible_distribution in ["Debian"]
