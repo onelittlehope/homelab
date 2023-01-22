@@ -17,11 +17,11 @@
     owner: root
     group: root
     mode: "0644"
-    vars:
-      pkgs_to_pin:
-        - "iamerican"
-        - "ibritish"
-        - "krb5-locales"
-        - "libatm1"
-        - "wamerican"
-        - "wbritish"
+  vars:
+    pkgs_to_pin:
+      - "iamerican"
+      - "ibritish"
+      - "krb5-locales"
+      - "libatm1"
+      - "wamerican"
+      - "wbritish"
