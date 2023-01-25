@@ -14,6 +14,7 @@
   - import_tasks: packages/printer.yml
   - import_tasks: packages/network.yml
   - import_tasks: packages/powermgmt.yml
+  - import_tasks: packages/kde.yml
   # - import_tasks: packages/desktop_apps.yml
   # - import_tasks: packages/qemu.yml
   # - import_tasks: packages/docker.yml
