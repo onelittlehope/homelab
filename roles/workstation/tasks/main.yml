@@ -2,6 +2,7 @@
 
 - block:
   # Install workstation packages
+  - import_tasks: packages/unwanted_pinned.yml
   - import_tasks: packages/c_cpp_devel.yml
   - import_tasks: packages/fonts.yml
   - import_tasks: packages/xorg.yml

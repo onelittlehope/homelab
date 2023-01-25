@@ -1,0 +1,45 @@
+---
+
+- name: "packages | unwanted_pinned | Pin unwanted workstation packages"
+  tags: unwanted_pinned, packages
+  ansible.builtin.blockinfile:
+    path: "/etc/apt/preferences.d/unwanted-packages"
+    # New lines in the block are required!
+    block: |
+      {% for i in pkgs_to_pin %}
+
+      Package: {{ i }}
+      Pin: release o=Debian
+      Pin-Priority: -10
+
+      {% endfor %}
+    marker: "# {mark} ANSIBLE MANAGED BLOCK [roles|workstation|packages|unwanted_pinned]"
+    create: true
+    owner: root
+    group: root
+    mode: "0644"
+  vars:
+    pkgs_to_pin:
+      - "geoclue-2.0"                   # libqt5positioning5
+      - "haveged"                       # sddm
+      - "kaccounts-providers"           # libkaccounts2
+      - "kdeconnect"                    # qml-module-org-kde-purpose
+      - "kup-backup"                    # plasma-disks
+      - "ofono"                         # connman
+      - "packagekit"                    # libpackagekit-glib2-18
+      - "partitionmanager"              # plasma-disks
+      - "plasma-browser-integration"    # plasma-desktop
+      - "plasma-discover"               # plasma-desktop
+      - "plasma-nm"                     # plasma-desktop
+      - "plasma-thunderbolt"            # plasma-desktop
+      - "plasma-vault"                  # plasma-desktop
+      - "plymouth-label"                # desktop-base
+      - "pulseaudio-module-bluetooth"   # bluedevil
+      - "pulseaudio-module-gsettings"   # plasma-pa
+      - "qt5-gtk-platformtheme"         # libqt5gui5
+      - "systemd-coredump"              # drkonqi
+      - "usbmuxd"                       # libimobiledevice6
+      - "wpasupplicant"                 # connman
+      - "xl2tpd"                        # connman-vpn
+      - "xl2tpd:i386"                   # connman-vpn
+      - "xserver-xorg-input-wacom"      # xserver-xorg-input-all
