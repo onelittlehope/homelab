@@ -13,6 +13,7 @@
       Pin-Priority: -10
 
       {% endfor %}
+    marker: "# {mark} ANSIBLE MANAGED BLOCK [roles|base|packages|unwanted_pinned]"
     create: true
     owner: root
     group: root
