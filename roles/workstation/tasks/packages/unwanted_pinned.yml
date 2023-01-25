@@ -36,9 +36,6 @@
       - "plymouth-label"                # desktop-base
       - "pulseaudio-module-bluetooth"   # bluedevil
       - "pulseaudio-module-gsettings"   # plasma-pa
-      - "qt5-gtk-platformtheme"         # libqt5gui5
-      - "systemd-coredump"              # drkonqi
-      - "usbmuxd"                       # libimobiledevice6
       - "wpasupplicant"                 # connman
       - "xl2tpd"                        # connman-vpn
       - "xl2tpd:i386"                   # connman-vpn
