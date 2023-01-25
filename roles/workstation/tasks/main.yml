@@ -1,0 +1,25 @@
+---
+
+- block:
+  # Install workstation packages
+  - import_tasks: packages/c_cpp_devel.yml
+  - import_tasks: packages/fonts.yml
+  - import_tasks: packages/xorg.yml
+  # - import_tasks: packages/wayland.yml
+  # - import_tasks: packages/qt5_gtk3.yml
+  - import_tasks: packages/firmware.yml
+  - import_tasks: packages/sound.yml
+  - import_tasks: packages/bluetooth.yml
+  - import_tasks: packages/printer.yml
+  - import_tasks: packages/network.yml
+  - import_tasks: packages/powermgmt.yml
+  # - import_tasks: packages/desktop_apps.yml
+  # - import_tasks: packages/qemu.yml
+  # - import_tasks: packages/docker.yml
+
+  # Perform system setup tasks
+  # - import_tasks: system_setup/environment.yml
+  - import_tasks: system_setup/cups.yml
+
+  rescue:
+    - set_fact: task_failed=true

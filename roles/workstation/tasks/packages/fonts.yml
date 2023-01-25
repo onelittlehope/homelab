@@ -1,0 +1,45 @@
+---
+
+- name: "packages | fonts | Install font packages"
+  tags: fonts, packages
+  ansible.builtin.apt:
+    name:
+      - "fonts-dejavu-extra"
+      - "fonts-hack"
+      - "fonts-jetbrains-mono"
+      - "fonts-lmodern"
+      - "fonts-noto"
+      - "fonts-opensymbol"
+      - "fonts-stix"
+      - "ttf-mscorefonts-installer"
+    install_recommends: yes
+    state: latest
+
+- name: "packages | fonts | Install nerd fonts"
+  tags: fonts, packages
+  block:
+    - name: "packages | fonts | Ensure '/usr/share/fonts/truetype/nerd' directory exists"
+      ansible.builtin.file:
+        path: "/usr/share/fonts/truetype/nerd"
+        owner: root
+        group: root
+        mode: "0755"
+        state: directory
+
+    # Source: https://stackoverflow.com/a/75117119/76938
+    - name: "packages | fonts | Get latest release details for nerd-fonts"
+      ansible.builtin.uri:
+        url: "https://api.github.com/repos/ryanoasis/nerd-fonts/releases/latest"
+        method: GET
+        return_content: yes
+      register: nerd_fonts_release
+
+    - name: "packages | fonts | Download and install the Hack nerd font archive"
+      unarchive:
+        src: "https://github.com/ryanoasis/nerd-fonts/releases/download/{{ nerd_fonts_release.json.tag_name }}/Hack.zip"
+        dest: "/usr/share/fonts/truetype/nerd/"
+        remote_src: yes
+        owner: root
+        group: root
+        mode: "0644"
+        creates: "/usr/share/fonts/truetype/nerd/Hack Italic Nerd Font Complete.ttf"

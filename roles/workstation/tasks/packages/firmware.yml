@@ -1,0 +1,9 @@
+---
+
+- name: "packages | firmware | Install firmware packages"
+  tags: firmware, packages
+  ansible.builtin.apt:
+    name:
+      - "firmware-linux"
+    install_recommends: yes
+    state: latest

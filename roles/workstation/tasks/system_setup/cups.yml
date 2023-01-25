@@ -1,0 +1,77 @@
+---
+
+- name: "system_setup | cups | Configure cups and its dependencies"
+  tags: cups, system_setup
+  block:
+    - name: "system_setup | cups | Ensure the avahi-daemon.service Systemd unit is stopped & disabled"
+      ansible.builtin.systemd:
+        daemon_reload : true
+        enabled: false
+        masked: true
+        name: "avahi-daemon.service"
+        state: "stopped"
+
+    - name: "system_setup | cups | Ensure the avahi-daemon.socket Systemd unit is stopped & disabled"
+      ansible.builtin.systemd:
+        daemon_reload : true
+        enabled: false
+        masked: true
+        name: "avahi-daemon.socket"
+        state: "stopped"
+
+    - name: "system_setup | cups | Ensure the cups-browsed.service Systemd unit is stopped & disabled"
+      ansible.builtin.systemd:
+        daemon_reload : true
+        enabled: false
+        masked: true
+        name: "cups-browsed.service"
+        state: "stopped"
+
+    - name: "system_setup | cups | Ensure the colord.service Systemd unit is stopped & disabled"
+      ansible.builtin.systemd:
+        daemon_reload : true
+        enabled: false
+        masked: true
+        name: "colord.service"
+        state: "stopped"
+
+    # If cups.socket is enabled (and cups.service is disabled), systemd will
+    # not start CUPS immediately; it will just listen to the appropriate
+    # sockets. Then, whenever a program attempts to connect to one of these
+    # CUPS sockets, systemd will start cups.service and transparently hand
+    # over control of these ports to the CUPS process.
+    - name: "system_setup | cups | Ensure the cups.service Systemd unit is stopped & disabled"
+      ansible.builtin.systemd:
+        daemon_reload : true
+        enabled: false
+        name: "cups.service"
+        state: "stopped"
+
+    - name: "system_setup | cups | Add desktop user '{{ desktop_user_name }}' to group 'lpadmin'"
+      ansible.builtin.user:
+        name: "{{ desktop_user_name }}"
+        groups: "lpadmin"
+        append: yes
+
+    - name: "system_setup | cups | Create the '/etc/systemd/system/cups.socket.d' directory"
+      ansible.builtin.file:
+        path: "/etc/systemd/system/cups.socket.d"
+        owner: root
+        group: root
+        mode: "0755"
+        state: directory
+
+    - name: "system_setup | cups | Configure CUPS to listen on http://localhost:631"
+      ansible.builtin.copy:
+        src: "/usr/share/doc/cups-daemon/examples/cups-socket.localhost.conf"
+        dest: "/etc/systemd/system/cups.socket.d/cups-socket.localhost.conf"
+        owner: root
+        group: root
+        mode: "0644"
+
+    - name: "system_setup | cups | Ensure the cups.socket Systemd unit is started & enabled"
+      ansible.builtin.systemd:
+        daemon_reload : true
+        enabled: true
+        name: "cups.socket"
+        state: "started"

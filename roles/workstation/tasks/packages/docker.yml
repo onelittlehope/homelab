@@ -1,0 +1,12 @@
+---
+
+- name: "packages | docker | Install docker packages"
+  tags: docker, packages
+  ansible.builtin.apt:
+    name:
+      - "containernetworking-plugins"
+      - "distrobox"
+      - "docker-clean"
+      - "docker.io"
+    install_recommends: yes
+    state: latest

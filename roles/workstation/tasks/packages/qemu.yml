@@ -1,0 +1,10 @@
+---
+
+- name: "packages | qemu | Install qemu packages"
+  tags: qemu, packages
+  ansible.builtin.apt:
+    name:
+      - "aqemu"
+      - "qemu-system"
+    install_recommends: yes
+    state: latest

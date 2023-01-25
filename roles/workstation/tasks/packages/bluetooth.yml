@@ -1,0 +1,15 @@
+---
+
+- name: "packages | bluetooth | Install bluetooth packages"
+  tags: bluetooth, packages
+  ansible.builtin.apt:
+    name:
+      - "bluetooth"
+      - "bluez"
+      - "bluez-firmware"
+      - "bluez-hcidump"
+      - "bluez-obexd"
+      - "bluez-tools"
+      - "btscanner"
+    install_recommends: yes
+    state: latest

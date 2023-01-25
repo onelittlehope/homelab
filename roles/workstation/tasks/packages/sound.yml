@@ -1,0 +1,17 @@
+---
+
+- name: "packages | sound | Install sound packages"
+  tags: sound, packages
+  ansible.builtin.apt:
+    name:
+      - "alsa-oss"
+      - "alsa-utils"
+      - "libspa-0.2-bluetooth"
+      - "pipewire"
+      - "pipewire-alsa"
+      - "pipewire-libcamera"
+      - "pipewire-pulse"
+      - "pipewire-v4l2"
+      - "wireplumber"
+    install_recommends: yes
+    state: latest

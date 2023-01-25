@@ -1,0 +1,31 @@
+---
+
+- name: "packages | wayland | Install Wayland packages"
+  tags: wayland, packages
+  ansible.builtin.apt:
+    name:
+      - "clipman"
+      - "foot"
+      - "foot-themes"
+      - "glmark2-wayland"
+      - "grimshot"
+      - "sway"
+      - "sway-notification-center"
+      - "swaybg"
+      - "swayidle"
+      - "swaykbdd"
+      - "swaylock"
+      - "waybar"
+      - "wayvnc"
+      - "wdisplays"
+      - "wl-clipboard"
+      - "wlogout"
+      - "wlr-randr"
+      - "wob"
+      - "wofi"
+      - "wtype"
+      - "wvkbd"
+      - "xdg-desktop-portal-wlr"
+      - "xwayland"
+    install_recommends: yes
+    state: latest

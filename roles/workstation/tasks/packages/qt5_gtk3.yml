@@ -1,0 +1,33 @@
+---
+
+- name: "packages | qt5_gtk3 | Install QT5 / GTK3 packages"
+  tags: qt5_gtk3, packages
+  ansible.builtin.apt:
+    name:
+      # QT 5
+      - "libqt5concurrent5"
+      - "libqt5core5a"
+      - "libqt5dbus5"
+      - "libqt5gui5"
+      - "libqt5network5"
+      - "libqt5opengl5"
+      - "libqt5printsupport5"
+      - "libqt5sql5"
+      - "libqt5sql5-sqlite"
+      - "libqt5test5"
+      - "libqt5widgets5"
+      - "libqt5xml5"
+      - "qt5-image-formats-plugin-pdf"
+      - "qt5-image-formats-plugins"
+      - "qt5-style-kvantum"
+      - "qt5-xdgdesktopportal-platformtheme"
+      # GTK 3
+      - "dconf-cli"
+      - "gir1.2-gtk-3.0"
+      - "libgail-3-0"
+      - "libglib2.0-bin"
+      - "libgtk-3-0"
+      - "libgtk-3-bin"
+      - "libgtk-3-common"
+    install_recommends: yes
+    state: latest

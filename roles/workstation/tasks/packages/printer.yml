@@ -1,0 +1,11 @@
+---
+
+- name: "packages | printer | Install printer packages"
+  tags: printer, packages
+  ansible.builtin.apt:
+    name:
+      - "cups"
+      - "cups-bsd"
+      - "printer-driver-cups-pdf"
+    install_recommends: yes
+    state: latest

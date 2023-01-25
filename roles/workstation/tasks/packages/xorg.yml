@@ -1,0 +1,28 @@
+---
+
+- name: "packages | xorg | Install xorg packages"
+  tags: xorg, packages
+  ansible.builtin.apt:
+    name:
+      - "glmark2-x11"
+      - "inxi"
+      - "libnotify-bin"
+      - "libvdpau-va-gl1"
+      - "mesa-opencl-icd"
+      - "mesa-utils"
+      - "mesa-va-drivers"
+      - "mesa-vdpau-drivers"
+      - "mesa-vulkan-drivers"
+      - "vainfo"
+      - "vdpauinfo"
+      - "vulkan-tools"
+      - "vulkan-validationlayers"
+      - "xdotool"
+      - "xinput"
+      - "xorg"
+      - "xsel"
+      - "xserver-xorg-video-fbdev"
+      - "xserver-xorg-video-vesa"
+      - "xterm"
+    install_recommends: yes
+    state: latest

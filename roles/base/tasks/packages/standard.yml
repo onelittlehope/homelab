@@ -41,7 +41,7 @@
       - "xxd"
       - "zstd"
       # --------------------------------------------------------------------
-      # My standard packages
+      # My minimal standard packages
       # --------------------------------------------------------------------
       - "acl"
       - "anacron"
@@ -154,6 +154,7 @@
       - "syncthing"
       - "sysstat"
       - "tcpdump"
+      - "tig"
       - "tmux"
       - "tree"
       - "trickle"

@@ -1,2 +1,6 @@
 # Default list of roles to include in a playbook run
 host_roles: []
+
+# Default desktop user/group
+desktop_user_name: "jc"
+desktop_user_group: "jc"

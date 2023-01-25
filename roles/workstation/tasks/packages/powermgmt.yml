@@ -1,0 +1,14 @@
+---
+
+- name: "packages | powermgmt | Install power management packages"
+  tags: powermgmt, packages
+  ansible.builtin.apt:
+    name:
+      - "i2c-tools"
+      - "linux-cpupower"
+      - "lm-sensors"
+      - "powermgmt-base"
+      - "powertop"
+      - "read-edid"
+    install_recommends: yes
+    state: latest

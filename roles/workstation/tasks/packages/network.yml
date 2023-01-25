@@ -1,0 +1,14 @@
+---
+
+- name: "packages | network | Install network packages"
+  tags: network, packages
+  ansible.builtin.apt:
+    name:
+      - "connman"
+      - "connman-vpn"
+      - "iw"
+      - "iwd"
+      - "rfkill"
+      - "wavemon"
+    install_recommends: yes
+    state: latest

@@ -1,0 +1,22 @@
+---
+
+- name: "packages | c_cpp_devel | Install C / C++ devel packages"
+  tags: c_cpp_devel, packages
+  ansible.builtin.apt:
+    name:
+      - "autoconf"
+      - "autoconf-archive"
+      - "automake"
+      - "debian-keyring"
+      - "debian-policy"
+      - "developers-reference"
+      - "gdb"
+      - "gettext"
+      - "libncurses-dev"
+      - "libtool"
+      - "linux-headers-amd64"
+      - "linux-source"
+      - "maint-guide"
+      - "pkg-config"
+    install_recommends: yes
+    state: latest
