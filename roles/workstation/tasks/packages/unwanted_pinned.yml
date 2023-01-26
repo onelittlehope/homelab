@@ -26,7 +26,6 @@
       - "kdeconnect"                    # qml-module-org-kde-purpose
       - "kup-backup"                    # plasma-disks
       - "ofono"                         # connman
-      - "packagekit"                    # libpackagekit-glib2-18
       - "partitionmanager"              # plasma-disks
       - "plasma-browser-integration"    # plasma-desktop
       - "plasma-discover"               # plasma-desktop
