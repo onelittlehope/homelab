@@ -67,12 +67,12 @@
       {% endfor %}
   when: ansible_pull_user_created.changed
 
-# Source: https://docs.gitlab.com/ee/user/gitlab_com/#ssh-known_hosts-entries
 - name: "system_setup | ansible | Add gitlab.com public SSH keys to system wide known_hosts"
   tags: ansible, system_setup
   ansible.builtin.known_hosts:
     path: /etc/ssh/ssh_known_hosts
     name: gitlab.com
+    # Source: https://docs.gitlab.com/ee/user/gitlab_com/#ssh-known_hosts-entries
     key: |
       gitlab.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAfuCHKVTjquxvt6CM6tdG4SLp1Btn/nOeHHE5UOzRdf
       gitlab.com ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCsj2bNKTBSpIYDEGk9KxsGh3mySTRgMtXL583qmBpzeQ+jqCMRgBqB98u3z++J1sKlXHWfM9dyhSevkMwSbhoR8XIq/U0tCNyokEi/ueaBMCvbcTHhO7FcwzY92WK4Yt0aGROY5qX2UKSeOvuP4D6TPqKF1onrSzH9bx9XUf2lEdWT/ia1NEKjunUqu1xOB/StKDHMoX4/OKyIzuS0q/T1zOATthvasJFoPrAjkohTyaDUz2LN5JoH839hViyEG82yB+MjcFV5MU3N1l1QL3cVUCh93xSaua1N85qivl+siMkPGbO5xR/En4iEY6K2XPASUEMaieWVNTRCtJ4S8H+9
@@ -89,8 +89,8 @@
       - "aptitude"
       - "git"
       - "python3-apt"
-      - "python3-github"
-      - "python3-gitlab"
+      # - "python3-github"
+      # - "python3-gitlab"
       - "sudo"
     install_recommends: yes
     state: latest

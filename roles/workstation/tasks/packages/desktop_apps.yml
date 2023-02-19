@@ -4,40 +4,21 @@
   tags: desktop_apps, packages
   ansible.builtin.apt:
     name:
-      # - "blueman"
       - "cmst"
       - "doublecmd-help-en"              # doublecmd-qt
       - "doublecmd-qt"
-      - "ffmpeg"                         # yt-dlp
-      - "firefox"
-      - "firefox-l10n-en-gb"
-      - "flatpak"
-      # - "freerdp2-wayland"
-      # - "freerdp2-x11"
-      # - "gimagereader-qt5"
-      # - "imagemagick-6.q16"
       - "keepassxc"
       - "libffmpegthumbnailer4v5"        # doublecmd-qt
       - "libunrar5"                      # doublecmd-qt
       - "mpv"
-      - "nomacs"
-      # - "pasystray"
-      # - "pavucontrol-qt"
       - "putty"
       - "qalculate-gtk"
       - "qbittorrent"
       - "qdirstat"
-      # - "tesseract-ocr"
-      - "thunderbird"
-      - "thunderbird-l10n-en-gb"
       - "tigervnc-tools"
       - "tigervnc-viewer"
       - "translate-shell"
       - "yt-dlp"
-      # - "zathura"
-      # - "zathura-cb"
-      # - "zathura-djvu"
-      # - "zathura-ps"
       - "zbar-tools"
       - "zbarcam-qt"
     install_recommends: yes

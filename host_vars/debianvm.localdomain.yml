@@ -1,9 +1,17 @@
 ---
 # List of roles to include in a playbook run
 host_roles:
+
+  # From the base role, run tasks to switch to Debian Testing
   - name: "base"
     tasks_from: "system_setup/debian_testing"
+
+  # From the base role, run tasks to ensure the Hyper-V packages are up to date
   - name: "base"
     tasks_from: "system_setup/hyperv_vm"
+
+  # Install the base role
   - "base"
-  - "workstation"
+
+  # Install the workstation role
+  # - "workstation"

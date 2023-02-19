@@ -1,0 +1,40 @@
+---
+
+- name: "packages | flatpak | Install Flatpak applications"
+  tags: flatpak, packages
+  block:
+    - name: "packages | flatpak | Install flatpak"
+      ansible.builtin.apt:
+        name:
+          - "flatpak"
+        install_recommends: yes
+        state: latest
+
+    - name: "packages | flatpak | Add the Flathub repository"
+      community.general.flatpak_remote:
+        name: flathub
+        flatpakrepo_url: "https://flathub.org/repo/flathub.flatpakrepo"
+        method: system
+        state: present
+
+    - name: "packages | flatpak | Install Flatpak applications"
+      community.general.flatpak:
+        name:
+          - "com.getpostman.Postman"
+          - "com.github.tchx84.Flatseal"
+          - "com.google.Chrome"
+          - "com.jgraph.drawio.desktop"
+          - "com.slack.Slack"
+          - "com.valvesoftware.Steam"
+          - "net.cozic.joplin_desktop"
+          - "org.freedesktop.Platform.ffmpeg-full"
+          - "org.freedesktop.Platform.VAAPI.Intel"
+          - "org.kde.krita"
+          - "org.libreoffice.LibreOffice"
+          - "org.mozilla.firefox"
+          - "org.mozilla.Thunderbird"
+          - "org.signal.Signal"
+          - "org.telegram.desktop"
+          - "org.videolan.VLC"
+        state: present
+        remote: flathub
