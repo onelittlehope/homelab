@@ -1,0 +1,59 @@
+---
+
+- name: "system_setup | msi_meg_x570_ace_desktop | Hardware support for MSI MEG X570 ACE desktop"
+  tags: msi_meg_x570_ace_desktop, system_setup
+  block:
+
+    - name: "system_setup | msi_meg_x570_ace_desktop | Install AMD graphics card packages"
+      ansible.builtin.apt:
+        name:
+          - "amdgpu-fan"
+          - "firmware-amd-graphics"
+          - "libdrm-amdgpu1"
+          - "radeontop"
+          - "xserver-xorg-video-amdgpu"
+        install_recommends: yes
+        state: latest
+
+    - name: "system_setup | msi_meg_x570_ace_desktop | Fix the amdgpu kernel module being loaded after display manager issue"
+      ansible.builtin.blockinfile:
+        path: "/etc/initramfs-tools/modules"
+        create: true
+        owner: root
+        group: root
+        mode: "0644"
+        marker: "# {mark} ANSIBLE MANAGED BLOCK [roles|workstation|system_setup|msi_meg_x570_ace_desktop]"
+        block: |
+          #
+          # Ensure amdgpu module is loaded early to prevent the display
+          # manager from failing to start on a fast computer where a
+          # race condition can occur whereby the modules are not yet
+          # loaded when the display manager starts.
+          #
+          amdgpu
+      register: initramfs_modules_config
+
+    - name: "system_setup | msi_meg_x570_ace_desktop | Regenerate the initramfs image"
+      ansible.builtin.command: update-initramfs -u
+      when: initramfs_modules_config.changed
+
+    - name: "system_setup | msi_meg_x570_ace_desktop | Configure MSI MEG X570 ACE desktop specific environment variables"
+      ansible.builtin.blockinfile:
+        path: "/etc/environment"
+        create: true
+        owner: root
+        group: root
+        mode: "0644"
+        marker: "# {mark} ANSIBLE MANAGED BLOCK [roles|workstation|system_setup|msi_meg_x570_ace_desktop]"
+        block: |
+          # By default use the discrete card's hw video acceleration
+          DRI_PRIME=1
+          LIBVA_DRIVER_NAME=radeonsi
+          VDPAU_DRIVER=radeonsi
+
+  rescue:
+    - set_fact: task_failed=true
+
+  when:
+    - ansible_board_name == 'MS-7C35'
+    - ansible_board_vendor == 'Micro-Star International Co., Ltd.'

@@ -1,0 +1,141 @@
+---
+
+- name: "system_setup | tuxedo_clevo_p960rd_laptop | Hardware support for TUXEDO/Clevo P960RD laptop"
+  tags: tuxedo_clevo_p960rd_laptop, system_setup
+  block:
+    # Source: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=942881#8
+    - name: "system_setup | tuxedo_clevo_p960rd_laptop | Fix Intel sound card issue"
+      ansible.builtin.blockinfile:
+        path: "/etc/modprobe.d/99-snd_hda_intel.conf"
+        create: true
+        owner: root
+        group: root
+        mode: "0644"
+        block: |
+          #
+          # Fix for the "snd_hda_intel 0000:00:1f.3: No response from
+          # codec, resetting bus: last cmd=0x2073b000" error.
+          #
+          options snd_hda_intel probe_mask=1
+
+    # Source: https://groups.google.com/g/linux.debian.bugs.dist/c/AAMZOt3JHtA/m/uHrur9hYBwAJ
+    - name: "system_setup | tuxedo_clevo_p960rd_laptop | Fix Intel Wifi error message 'firmware: failed to load iwl-debug-yoyo.bin'"
+      ansible.builtin.blockinfile:
+        path: "/etc/modprobe.d/iwlwifi.conf"
+        create: true
+        owner: root
+        group: root
+        mode: "0644"
+        block: |
+          #
+          # Fix for the "firmware: failed to load iwl-debug-yoyo.bin"
+          # error message.
+          #
+          options iwlwifi enable_ini=N
+
+    - name: "system_setup | tuxedo_clevo_p960rd_laptop | Install firmware + Intel/nVIDIA graphics card packages"
+      ansible.builtin.apt:
+        name:
+          - "firmware-iwlwifi"
+          - "firmware-realtek"
+          - "firmware-sof-signed"
+          - "intel-gpu-tools"
+          - "intel-media-va-driver-non-free"
+          - "linux-headers-amd64"
+          - "nvidia-detect"
+          - "nvidia-driver"
+          - "nvidia-kernel-dkms"
+          - "nvidia-vulkan-icd"
+        install_recommends: yes
+        state: latest
+
+    # Source:
+    # - https://old.reddit.com/r/archlinux/comments/sub47x/nvidia_strikes_back_sddm_no_display/hxam0kg/
+    # - https://wiki.archlinux.org/title/NVIDIA#DRM_kernel_mode_setting
+    - name: "system_setup | tuxedo_clevo_p960rd_laptop | Fix the nvidia kernel module being loaded after display manager issue"
+      ansible.builtin.blockinfile:
+        path: "/etc/initramfs-tools/modules"
+        create: true
+        owner: root
+        group: root
+        mode: "0644"
+        marker: "# {mark} ANSIBLE MANAGED BLOCK [roles|workstation|system_setup|tuxedo_clevo_p960rd_laptop]"
+        block: |
+          #
+          # Ensure i915/nvidia modules are loaded early to prevent the
+          # display manager from failing to start on a fast computer where
+          # a race condition can occur whereby the modules are not yet
+          # loaded when the display manager starts.
+          #
+          i915
+          nvidia
+          nvidia_modeset
+          nvidia_uvm
+          nvidia_drm
+      register: initramfs_modules_config
+
+    - name: "system_setup | tuxedo_clevo_p960rd_laptop | Regenerate the initramfs image"
+      ansible.builtin.command: update-initramfs -u
+      when: initramfs_modules_config.changed
+
+    - name: "system_setup | tuxedo_clevo_p960rd_laptop | Enable NVIDIA's DRM KMS support"
+      ansible.builtin.lineinfile:
+        path: /etc/default/grub
+        regexp: '^GRUB_CMDLINE_LINUX_DEFAULT="((:?(?!nvidia-drm.modeset=1).)*?)"$'
+        line: 'GRUB_CMDLINE_LINUX_DEFAULT="\1 nvidia-drm.modeset=1"'
+        backup: true
+        backrefs: true
+        owner: root
+        group: root
+        mode: "0644"
+      register: grub_config
+
+    - name: "system_setup | tuxedo_clevo_p960rd_laptop | Update grub config"
+      ansible.builtin.command: update-grub
+      when: grub_config.changed
+
+    - name: "system_setup | tuxedo_clevo_p960rd_laptop | Setup a script for launching an app with nVIDIA PRIME GPU offloading"
+      ansible.builtin.copy:
+        dest: "/usr/local/bin/nvidia-run"
+        content: |
+          #!/usr/bin/env bash
+
+          export __GL_GSYNC_ALLOWED=0
+          export __GL_VRR_ALLOWED=0
+          export __GLX_VENDOR_LIBRARY_NAME=nvidia
+          export __NV_PRIME_RENDER_OFFLOAD=1
+          export __NV_PRIME_RENDER_OFFLOAD_PROVIDER=NVIDIA-G0
+          export __VK_LAYER_NV_optimus=NVIDIA_only
+          export GBM_BACKEND=nvidia-drm
+
+          # export LIBVA_DRIVER_NAME=vdpau
+          export LIBVA_DRIVER_NAME=nvidia
+          export VDPAU_DRIVER=nvidia
+
+          export __GL_SYNC_TO_VBLANK=0
+          export vblank_mode=0
+
+          exec "$@"
+        owner: root
+        group: root
+        mode: "0755"
+
+    - name: "system_setup | tuxedo_clevo_p960rd_laptop | Configure TUXEDO/Clevo P960RD laptop specific environment variables"
+      ansible.builtin.blockinfile:
+        path: "/etc/environment"
+        create: true
+        owner: root
+        group: root
+        mode: "0644"
+        marker: "# {mark} ANSIBLE MANAGED BLOCK [roles|workstation|system_setup|tuxedo_clevo_p960rd_laptop]"
+        block: |
+          # By default use the integrated card's hw video acceleration
+          LIBVA_DRIVER_NAME=iHD
+          VDPAU_DRIVER=va_gl
+
+  rescue:
+    - set_fact: task_failed=true
+
+  when:
+    - ansible_board_name == 'P95_96_97Ex,Rx'
+    - ansible_board_vendor == 'TUXEDO'

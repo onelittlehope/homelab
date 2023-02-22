@@ -43,3 +43,16 @@
         group: root
         mode: "0644"
         creates: "/usr/share/fonts/truetype/nerd/Hack Italic Nerd Font Complete.ttf"
+
+    - name: "packages | fonts | Download and install the JetBrains Mono nerd font archive"
+      unarchive:
+        src: "https://github.com/ryanoasis/nerd-fonts/releases/download/{{ nerd_fonts_release.json.tag_name }}/JetBrainsMono.zip"
+        dest: "/usr/share/fonts/truetype/nerd/"
+        remote_src: yes
+        owner: root
+        group: root
+        mode: "0644"
+        creates: "/usr/share/fonts/truetype/nerd/JetBrains Mono Bold Italic Nerd Font Complete.ttf"
+
+  rescue:
+    - set_fact: task_failed=true

@@ -14,12 +14,17 @@
   - import_tasks: packages/powermgmt.yml
   - import_tasks: packages/kde.yml
   - import_tasks: packages/desktop_apps.yml
-  - import_tasks: packages/flatpak.yml
-  - import_tasks: packages/docker.yml
-  - import_tasks: packages/qemu.yml
+  # - import_tasks: packages/flatpak.yml
+  # - import_tasks: packages/docker.yml
+  # - import_tasks: packages/qemu.yml
 
   # Perform system setup tasks
+  - import_tasks: system_setup/kde_qt_environment.yml
   - import_tasks: system_setup/cups.yml
+
+  # HW specific tasks
+  - import_tasks: system_setup/tuxedo_clevo_p960rd_laptop.yml
+  - import_tasks: system_setup/msi_meg_x570_ace_desktop.yml
 
   rescue:
     - set_fact: task_failed=true

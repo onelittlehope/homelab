@@ -1,0 +1,24 @@
+---
+
+- name: "system_setup | kde_qt_environment | Configure KDE/QT environment variables"
+  tags: kde_qt_environment, system_setup
+  ansible.builtin.blockinfile:
+    path: "/etc/environment"
+    create: true
+    owner: root
+    group: root
+    mode: "0644"
+    marker: "# {mark} ANSIBLE MANAGED BLOCK [roles|workstation|system_setup|kde_qt_environment]"
+    block: |
+      # Some Java-based applications will display blank screen when
+      # opened in a tiling WM. (e.g. JetBrains products)
+      _JAVA_AWT_WM_NONREPARENTING=1
+
+      # Disable automatic detection of DPI
+      QT_AUTO_SCREEN_SCALE_FACTOR=0
+
+      # Hardcode font DPI for QT apps
+      QT_FONT_DPI=96
+
+      # Disable QT debug logging to systemd journal
+      QT_LOGGING_RULES='*.debug=false'
