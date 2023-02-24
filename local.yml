@@ -15,7 +15,7 @@
   tasks:
     # Include per-host list of roles
     - include_role:
-        name: '{{ host_role.name | default(host_role) }}'
+        name: "{{ host_role.name | default(host_role) }}"
         tasks_from: '{{ host_role.tasks_from | default("main") }}'
         apply:
           tags:
