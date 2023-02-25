@@ -124,7 +124,7 @@ class CallbackModule(CallbackBase):
 
         # JC 2023-02-24 - Track what the current role is so that Ansible can
         # print a line for included_roles in v2_playbook_on_task_start()
-        self.current_role = None
+        self._current_role = None
 
         super(CallbackModule, self).__init__()
 
