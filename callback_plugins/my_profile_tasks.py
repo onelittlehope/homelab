@@ -175,7 +175,7 @@ class CallbackModule(CallbackBase):
         if(task._role is not None and task._role != self._current_role):
             self._current_role = task._role
             self._display.banner("ROLE [" + self._current_role.get_name() + "]")
-            print(self.__dict__)
+            print(task.__dict__)
 
         self._record_task(task)
 
