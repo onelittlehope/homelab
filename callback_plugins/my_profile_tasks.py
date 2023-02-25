@@ -122,6 +122,10 @@ class CallbackModule(CallbackBase):
         self.sort_order = None
         self.task_output_limit = None
 
+        # JC 2023-02-24 - Track what the current role is so that Ansible can
+        # print a line for included_roles in v2_playbook_on_task_start()
+        self.current_role = None
+
         super(CallbackModule, self).__init__()
 
     def set_options(self, task_keys=None, var_options=None, direct=None):
