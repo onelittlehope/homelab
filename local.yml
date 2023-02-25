@@ -14,8 +14,10 @@
   hosts: all
   become: true
   tasks:
+    - ansible.builtin.debug:
+        msg: "outer item={{ host_role }} inner item={{ item }}"
     # Include per-host list of roles
-    - include_role:
+      include_role:
         name: "{{ host_role.name | default(host_role) }}"
         tasks_from: '{{ host_role.tasks_from | default("main") }}'
         apply:
@@ -24,7 +26,6 @@
       loop: '{{ host_roles }}'
       loop_control:
         loop_var: host_role
-        label: "{{ host_role.name | default(host_role) }}"
       tags:
         - always
 
