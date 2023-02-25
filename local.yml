@@ -1,5 +1,5 @@
 # Tasks to complete before running roles
-- name: "local | Running pre-tasks"
+- name: "local.yml | Running pre-tasks"
   hosts: all
   tags: always
   become: true
@@ -10,7 +10,7 @@
         cache_valid_time: 3600
       changed_when: False
 
-- name: "local | Running roles"
+- name: "local.yml | Running roles"
   hosts: all
   become: true
   tasks:
@@ -24,11 +24,11 @@
       loop: '{{ host_roles }}'
       loop_control:
         loop_var: host_role
+        label: "{{ host_role.name | default(host_role) }}"
       tags:
         - always
 
-# Clean up
-- name: "local | Running post-tasks"
+- name: "local.yml | Running post-tasks"
   hosts: all
   tags: always
   become: true
