@@ -24,7 +24,6 @@
       loop: '{{ host_roles }}'
       loop_control:
         loop_var: host_role
-        label: "Running role {{ host_role }} -- {{ host_role.name | default(host_role) }}"
       tags:
         - always
 
