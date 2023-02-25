@@ -16,7 +16,7 @@
   tasks:
     - name: "local.yml | Run host specific list of roles"
       ansible.builtin.include_role:
-        name: "{{ host_role }} - {{ host_role.name | default(host_role) }}"
+        name: "{{ host_role.name | default(host_role) }}"
         tasks_from: '{{ host_role.tasks_from | default("main") }}'
         apply:
           tags:
@@ -24,7 +24,7 @@
       loop: '{{ host_roles }}'
       loop_control:
         loop_var: host_role
-        label: "Running role {{ host_role }} - {{ host_role.name | default(host_role) }}"
+        label: "Running role {{ host_role }} -- {{ host_role.name | default(host_role) }}"
       tags:
         - always
 
