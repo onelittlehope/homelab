@@ -1,5 +1,6 @@
 # Tasks to complete before running roles
-- hosts: all
+- name: "local | Running pre-tasks"
+  hosts: all
   tags: always
   become: true
   pre_tasks:
@@ -9,8 +10,8 @@
         cache_valid_time: 3600
       changed_when: False
 
-# Run roles
-- hosts: all
+- name: "local | Running roles"
+  hosts: all
   become: true
   tasks:
     # Include per-host list of roles
@@ -27,7 +28,8 @@
         - always
 
 # Clean up
-- hosts: all
+- name: "local | Running post-tasks"
+  hosts: all
   tags: always
   become: true
   tasks:
