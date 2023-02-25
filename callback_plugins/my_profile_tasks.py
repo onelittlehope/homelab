@@ -166,6 +166,12 @@ class CallbackModule(CallbackBase):
             self.stats[self.current]['path'] = task.get_path()
 
     def v2_playbook_on_task_start(self, task, is_conditional):
+        # JC 2023-02-24 - Ansible should print a line for included_roles
+        # Source: https://devops.stackexchange.com/a/6905
+        if(task._role is not None and task._role != self._current_role):
+            self._current_role = task._role
+            self._display.banner("ROLE [" + self._current_role.get_name() + "]")
+
         self._record_task(task)
 
     def v2_playbook_on_handler_task_start(self, task):
