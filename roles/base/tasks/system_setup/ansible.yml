@@ -149,7 +149,7 @@
   tags: ansible, system_setup
   ansible.builtin.service:
     name: "{{ item }}"
-    state: "started"
+    state: started
     enabled: true
     daemon_reload : true
   loop:

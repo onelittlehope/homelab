@@ -9,7 +9,7 @@
         enabled: false
         masked: true
         name: "avahi-daemon.service"
-        state: "stopped"
+        state: stopped
 
     - name: "system_setup | cups | Ensure the avahi-daemon.socket Systemd unit is stopped & disabled"
       ansible.builtin.systemd:
@@ -17,7 +17,7 @@
         enabled: false
         masked: true
         name: "avahi-daemon.socket"
-        state: "stopped"
+        state: stopped
 
     - name: "system_setup | cups | Ensure the cups-browsed.service Systemd unit is stopped & disabled"
       ansible.builtin.systemd:
@@ -25,7 +25,7 @@
         enabled: false
         masked: true
         name: "cups-browsed.service"
-        state: "stopped"
+        state: stopped
 
     - name: "system_setup | cups | Ensure the colord.service Systemd unit is stopped & disabled"
       ansible.builtin.systemd:
@@ -33,7 +33,7 @@
         enabled: false
         masked: true
         name: "colord.service"
-        state: "stopped"
+        state: stopped
 
     # If cups.socket is enabled (and cups.service is disabled), systemd will
     # not start CUPS immediately; it will just listen to the appropriate
@@ -45,7 +45,7 @@
         daemon_reload : true
         enabled: false
         name: "cups.service"
-        state: "stopped"
+        state: stopped
 
     - name: "system_setup | cups | Add desktop user '{{ desktop_user_name }}' to group 'lpadmin'"
       ansible.builtin.user:
@@ -74,4 +74,4 @@
         daemon_reload : true
         enabled: true
         name: "cups.socket"
-        state: "started"
+        state: started

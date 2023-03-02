@@ -9,4 +9,4 @@
       - "wamerican"
       - "wbritish"
     purge: true
-    state: "absent"
+    state: absent
