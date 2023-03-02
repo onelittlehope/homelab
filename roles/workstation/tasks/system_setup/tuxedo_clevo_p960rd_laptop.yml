@@ -47,7 +47,7 @@
           - "nvidia-kernel-dkms"
           - "nvidia-vulkan-icd"
         install_recommends: yes
-        state: latest
+        state: present
 
     # Source:
     # - https://old.reddit.com/r/archlinux/comments/sub47x/nvidia_strikes_back_sddm_no_display/hxam0kg/

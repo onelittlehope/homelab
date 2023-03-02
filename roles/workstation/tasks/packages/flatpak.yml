@@ -8,7 +8,7 @@
         name:
           - "flatpak"
         install_recommends: yes
-        state: latest
+        state: present
 
     - name: "packages | flatpak | Add the Flathub repository"
       community.general.flatpak_remote:

@@ -14,4 +14,4 @@
       - "pipewire-v4l2"
       - "wireplumber"
     install_recommends: yes
-    state: latest
+    state: present

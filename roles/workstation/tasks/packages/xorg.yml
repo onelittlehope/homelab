@@ -25,4 +25,4 @@
       - "xserver-xorg-video-vesa"
       - "xterm"
     install_recommends: yes
-    state: latest
+    state: present

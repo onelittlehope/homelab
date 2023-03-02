@@ -8,4 +8,4 @@
       - "cups-bsd"
       - "printer-driver-cups-pdf"
     install_recommends: yes
-    state: latest
+    state: present

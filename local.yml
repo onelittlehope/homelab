@@ -1,20 +1,21 @@
-# Tasks to complete before running roles
-- name: "local.yml | Running pre-tasks"
+---
+
+- name: "local.yml | Pre-tasks"
   hosts: all
   tags: always
   become: true
   pre_tasks:
-    - name: "Update apt package cache"
+    - name: "local.yml | Update apt package cache"
       ansible.builtin.apt:
         update_cache: true
         cache_valid_time: 3600
       changed_when: False
 
-- name: "local.yml | Running roles"
+- name: "local.yml | Roles"
   hosts: all
   become: true
   tasks:
-    - name: "local.yml | Run host specific list of roles"
+    - name: "local.yml | Host specific roles"
       ansible.builtin.include_role:
         name: "{{ host_role.name | default(host_role) }}"
         tasks_from: '{{ host_role.tasks_from | default("main") }}'
@@ -27,17 +28,12 @@
       tags:
         - always
 
-- name: "local.yml | Running post-tasks"
+- name: "local.yml | Post-tasks"
   hosts: all
   tags: always
   become: true
   tasks:
-  - name: "Clean up apt package cache"
+  - name: "local.yml | Clean up apt package cache"
     ansible.builtin.apt:
       autoclean: yes
     changed_when: false
-
-  - name: "Auto remove orphan packages"
-    ansible.builtin.apt:
-      autoremove: yes
-      purge: yes

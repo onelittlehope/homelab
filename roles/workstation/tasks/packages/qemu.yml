@@ -7,4 +7,4 @@
       - "aqemu"
       - "qemu-system"
     install_recommends: yes
-    state: latest
+    state: present

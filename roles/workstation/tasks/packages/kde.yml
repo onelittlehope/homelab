@@ -51,4 +51,4 @@
       - "skanlite"
       - "yakuake"
     install_recommends: yes
-    state: latest
+    state: present

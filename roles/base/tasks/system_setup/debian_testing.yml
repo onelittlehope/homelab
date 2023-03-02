@@ -85,7 +85,7 @@
       - "msmtp"
       - "msmtp-mta"
     install_recommends: yes
-    state: latest
+    state: present
   register: debsecan_installed
 
 - name: "system_setup | debian_testing | Set up the '/usr/sbin/debsecan-apt-priority' script"

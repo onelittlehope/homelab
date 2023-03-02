@@ -6,4 +6,4 @@
     name:
       - "hyperv-daemons"
     install_recommends: yes
-    state: latest
+    state: present

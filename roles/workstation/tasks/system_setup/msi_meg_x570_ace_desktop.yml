@@ -13,7 +13,7 @@
           - "radeontop"
           - "xserver-xorg-video-amdgpu"
         install_recommends: yes
-        state: latest
+        state: present
 
     - name: "system_setup | msi_meg_x570_ace_desktop | Fix the amdgpu kernel module being loaded after display manager issue"
       ansible.builtin.blockinfile:

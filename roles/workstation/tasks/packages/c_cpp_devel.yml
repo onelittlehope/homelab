@@ -19,4 +19,4 @@
       - "maint-guide"
       - "pkg-config"
     install_recommends: yes
-    state: latest
+    state: present

@@ -12,4 +12,4 @@
       - "bluez-tools"
       - "btscanner"
     install_recommends: yes
-    state: latest
+    state: present

@@ -1,12 +1,12 @@
 ---
 
-- name: "packages | standard | Install standard packages"
+- name: "packages | standard | Install Debian's 'standard' packages"
   tags: standard, packages
   ansible.builtin.apt:
     name:
-      # --------------------------------------------------------------------
+      # ------------------------------------------------------------------------
       # Debian's "standard" packages (aptitude search ~pstandard -F"%p")
-      # --------------------------------------------------------------------
+      # ------------------------------------------------------------------------
       - "apt-listchanges"
       - "bash-completion"
       - "bind9-dnsutils"
@@ -40,9 +40,16 @@
       - "uuid-runtime"
       - "xxd"
       - "zstd"
-      # --------------------------------------------------------------------
-      # My minimal standard packages
-      # --------------------------------------------------------------------
+    install_recommends: yes
+    state: present
+
+- name: "packages | standard | Install my standard packages"
+  tags: standard, packages
+  ansible.builtin.apt:
+    name:
+      # ------------------------------------------------------------------------
+      # My standard packages
+      # ------------------------------------------------------------------------
       - "acl"
       - "anacron"
       - "ansible"
@@ -175,7 +182,7 @@
       - "xz-utils"
       - "zip"
     install_recommends: yes
-    state: latest
+    state: present
 
 - name: "Install ps_mem.py"
   tags: standard, packages

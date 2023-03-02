@@ -11,4 +11,4 @@
       - "powertop"
       - "read-edid"
     install_recommends: yes
-    state: latest
+    state: present

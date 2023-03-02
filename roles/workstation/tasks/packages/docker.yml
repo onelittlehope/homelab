@@ -9,4 +9,4 @@
       - "docker-clean"
       - "docker.io"
     install_recommends: yes
-    state: latest
+    state: present

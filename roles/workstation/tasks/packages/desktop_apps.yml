@@ -22,7 +22,7 @@
       - "zbar-tools"
       - "zbarcam-qt"
     install_recommends: yes
-    state: latest
+    state: present
 
 - name: "packages | desktop_apps | Install Sublime Text / Merge"
   tags: desktop_apps, packages
@@ -49,7 +49,7 @@
           - "sublime-merge"
           - "sublime-text"
         install_recommends: yes
-        state: latest
+        state: present
 
   rescue:
     - set_fact: task_failed=true
@@ -83,7 +83,7 @@
         name:
           - "bcompare"
         install_recommends: yes
-        state: latest
+        state: present
 
   rescue:
     - set_fact: task_failed=true
@@ -111,7 +111,7 @@
         name:
           - "code"
         install_recommends: yes
-        state: latest
+        state: present
 
   rescue:
     - set_fact: task_failed=true
